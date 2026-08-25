@@ -9,8 +9,11 @@
   <script src="../assets/vendor/decap-cms.js"></script>
 </head>
 <body>
-  <p style="font-family:sans-serif;padding:2rem;text-align:center;color:#555">
-    正在加载内容管理后台……若长时间空白，请确认 Gitee OAuth 代理已部署，且 admin/config.yml 的 auth_endpoint 已填对。
+  <p id="loading-tip" style="font-family:sans-serif;padding:2rem;text-align:center;color:#555">
+    正在加载内容管理后台（首次加载约需 5–15 秒，请耐心等待）……若长时间空白，请确认 Cloudflare Pages 已连 GitHub 仓库 <code>Doria7727/dalian-expo</code>，且 <code>admin/config.yml</code> 中的 GitHub OAuth Client ID 已正确填写。
+  </p>
+  <p style="font-family:sans-serif;padding:0 2rem 2rem;text-align:center;color:#888;font-size:0.9em">
+    登录后会跳转 GitHub 授权，请用 <strong>Doria7727</strong> 账号登录。
   </p>
 </body>
 </html>
