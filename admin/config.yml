@@ -1,5 +1,10 @@
+# 后端用 Gitee：需配合 Cloudflare Worker 代理（见根目录 gitee-oauth-proxy.js）
+# 下方 repo / auth_endpoint / app_id 三处占位符，请替换为你自己的值
 backend:
-  name: git-gateway
+  name: gitee
+  repo: 你的Gitee用户名/仓库名
+  auth_endpoint: https://你的worker子域.workers.dev
+  app_id: 你的Gitee_OAuth_Client_ID
   branch: main
 
 # 编辑入口：/admin/
@@ -8,7 +13,6 @@ public_folder: "/assets/img/uploads"
 
 # 登录页文案（中文）
 locale: "zh"
-publish_mode: editorial_workflow
 
 collections:
   - name: "site"
