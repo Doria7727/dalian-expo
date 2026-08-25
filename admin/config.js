@@ -4,7 +4,9 @@ window.CMS_CONFIG = {
     name: 'github',
     repo: 'Doria7727/dalian-expo',
     branch: 'main',
-    client_id: 'Ov23liHFOwbuQpQyNCD6'
+    client_id: 'Ov23liHFOwbuQpQyNCD6',
+    // 自建 OAuth 代理（Cloudflare Worker，避开 Netlify 默认 api.netlify.com 的 Not Found）
+    auth_endpoint: 'https://dalian-expo-oauth.1060200619.workers.dev'
   },
   media_folder: 'assets/img/uploads',
   public_folder: '/assets/img/uploads',
