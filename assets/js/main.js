@@ -103,7 +103,10 @@
     $("#page-content").innerHTML = `
       <section class="hero">
         <div class="container hero-inner">
-          <span class="tag">${esc(SITE.edition)} · ${esc(SITE.year)}</span>
+          <div class="hero-top">
+            <span class="brand-mark"><span class="num">${esc(SITE.edition)}</span><span class="ed">${esc(SITE.theme || '数智引领工业')}</span></span>
+            <img class="hero-logo" src="assets/img/logo-ief-ufi.png" alt="IEF 中国·大连 · UFI 国际认证" />
+          </div>
           <h1>${esc(SITE.name)}</h1>
           <p class="sub">${esc(ABOUT.intro.slice(0, 60))}……数智引领工业，诚邀您共赴东北智造盛会。</p>
           <div class="hero-meta">

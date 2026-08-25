@@ -99,23 +99,60 @@ ul { margin: 0 0 1em; padding-left: 1.2em; }
 .hero {
   position: relative; color: #fff; overflow: hidden;
   background:
-    linear-gradient(120deg, rgba(13,43,78,.92), rgba(20,58,99,.78)),
-    url("../img/hero-bg.svg") center/cover no-repeat;
+    linear-gradient(135deg, rgba(13,43,78,.88) 0%, rgba(20,58,99,.72) 100%),
+    url("../img/hero-bg-real.jpg") center/cover no-repeat;
+  background-blend-mode: normal;
 }
-.hero-inner { padding: 90px 0 80px; }
+.hero::before {
+  content: ""; position: absolute; inset: 0;
+  background: radial-gradient(ellipse at center, rgba(0,0,0,0) 30%, rgba(0,0,0,.35) 100%);
+  pointer-events: none;
+}
+.hero-inner { padding: 90px 0 80px; position: relative; z-index: 2; }
+.hero-top {
+  display: flex; align-items: flex-start; justify-content: space-between; gap: 24px;
+  margin-bottom: 28px; flex-wrap: wrap;
+}
+.hero-top .brand-mark {
+  display: inline-flex; align-items: center; gap: 10px;
+  padding: 8px 16px; border: 1px solid rgba(255,255,255,.35);
+  border-radius: 999px; font-size: .9rem; letter-spacing: .08em;
+  background: rgba(255,255,255,.08); backdrop-filter: blur(4px);
+}
+.hero-top .brand-mark .num {
+  font-weight: 800; color: #ffb37a; font-size: 1.1rem;
+}
+.hero-top .brand-mark .ed { color: #e8f0f8; }
+.hero-logo {
+  height: 56px; width: auto; max-width: 280px;
+  filter: drop-shadow(0 2px 8px rgba(0,0,0,.45));
+  object-fit: contain;
+}
 .hero .tag {
   display: inline-block; padding: 6px 16px; border: 1px solid rgba(255,255,255,.4);
   border-radius: 999px; font-size: .82rem; letter-spacing: .08em; margin-bottom: 18px;
-  background: rgba(255,255,255,.06);
+  background: rgba(255,255,255,.10);
+  text-shadow: 0 1px 3px rgba(0,0,0,.5);
 }
-.hero h1 { font-size: 3rem; margin-bottom: 14px; color:#fff; }
-.hero .sub { font-size: 1.25rem; max-width: 640px; color: #e8f0f8; margin-bottom: 26px; }
+.hero h1 {
+  font-size: 3rem; margin-bottom: 14px; color:#fff;
+  text-shadow: 0 2px 12px rgba(0,0,0,.65), 0 1px 3px rgba(0,0,0,.5);
+}
+.hero .sub {
+  font-size: 1.25rem; max-width: 640px; color: #f0f6fc; margin-bottom: 26px;
+  text-shadow: 0 1px 6px rgba(0,0,0,.6);
+}
 .hero-meta { display: flex; flex-wrap: wrap; gap: 26px; margin: 26px 0 32px; }
-.hero-meta .mi { display: flex; align-items: center; gap: 10px; }
+.hero-meta .mi { display: flex; align-items: center; gap: 10px; text-shadow: 0 1px 4px rgba(0,0,0,.55); }
 .hero-meta .mi .ic { font-size: 1.5rem; }
 .hero-meta .mi b { display: block; font-size: 1.05rem; }
-.hero-meta .mi span { font-size: .85rem; color: #b9cde0; }
+.hero-meta .mi span { font-size: .85rem; color: #d6e4f0; }
 .hero-actions { display: flex; gap: 14px; flex-wrap: wrap; }
+
+@media (max-width: 720px) {
+  .hero-logo { height: 44px; }
+  .hero h1 { font-size: 2rem; }
+}
 
 /* ---------- 区段通用 ---------- */
 .section { padding: 70px 0; }
