@@ -1,11 +1,10 @@
-# 后端用 Gitee：需配合 Cloudflare Worker 代理（见根目录 gitee-oauth-proxy.js）
-# 下方 repo / auth_endpoint / app_id 三处占位符，请替换为你自己的值
+# 后端用 GitHub（Decap 原生支持，无需 Cloudflare Worker 代理）
+# repo 替换为你的 GitHub 用户名/仓库名；client_id 替换为上方 GitHub OAuth App 的 Client ID
 backend:
-  name: gitee
-  repo: 你的Gitee用户名/仓库名
-  auth_endpoint: https://你的worker子域.workers.dev
-  app_id: 你的Gitee_OAuth_Client_ID
+  name: github
+  repo: Doria7727/dalian-expo
   branch: main
+  client_id: Ov23liHFOwbuQpQyNCD6
 
 # 编辑入口：/admin/
 media_folder: "assets/img/uploads"
