@@ -5,15 +5,84 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="robots" content="noindex" />
   <title>内容管理后台 · 大连工博会</title>
-  <!-- Decap CMS 已本地化（assets/vendor/decap-cms.js），避免境外 CDN 在内地加载慢 -->
-  <script src="../assets/vendor/decap-cms.js"></script>
+  <style>
+    body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif; background: #f6f7f9; color: #222; }
+    .wrap { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 2rem; box-sizing: border-box; }
+    .spinner { width: 56px; height: 56px; border: 4px solid #e0e3eb; border-top-color: #6c5ce7; border-radius: 50%; animation: spin 0.9s linear infinite; margin-bottom: 1.4rem; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .title { font-size: 1.15rem; color: #444; margin-bottom: 0.4rem; }
+    .sub { font-size: 0.9rem; color: #888; max-width: 520px; text-align: center; line-height: 1.55; }
+    .sub code { background: #ececf0; padding: 1px 6px; border-radius: 3px; font-size: 0.88em; color: #555; }
+    .err { display: none; margin-top: 1.5rem; padding: 1rem 1.2rem; background: #fff3f3; border: 1px solid #ffd0d0; border-radius: 8px; color: #b00; font-size: 0.9rem; max-width: 620px; text-align: left; }
+    .err.show { display: block; }
+    .err b { color: #900; }
+    .err code { background: #fce8e8; padding: 1px 5px; border-radius: 3px; }
+    .retry { margin-top: 0.8rem; padding: 6px 14px; background: #6c5ce7; color: #fff; border: none; border-radius: 6px; cursor: pointer; font-size: 0.9rem; }
+    .retry:hover { background: #5b4cd1; }
+  </style>
 </head>
 <body>
-  <p id="loading-tip" style="font-family:sans-serif;padding:2rem;text-align:center;color:#555">
-    正在加载内容管理后台（首次加载约需 5–15 秒，请耐心等待）……若长时间空白，请确认 Cloudflare Pages 已连 GitHub 仓库 <code>Doria7727/dalian-expo</code>，且 <code>admin/config.yml</code> 中的 GitHub OAuth Client ID 已正确填写。
-  </p>
-  <p style="font-family:sans-serif;padding:0 2rem 2rem;text-align:center;color:#888;font-size:0.9em">
-    登录后会跳转 GitHub 授权，请用 <strong>Doria7727</strong> 账号登录。
-  </p>
+  <div class="wrap">
+    <div class="spinner" id="spinner"></div>
+    <div class="title" id="title">正在加载内容管理后台……</div>
+    <div class="sub" id="sub">
+      首次加载需要下载后台脚本（约 5 MB），请耐心等待。<br>
+      登录后会跳转到 GitHub 授权，请用 <strong>Doria7727</strong> 账号登录。
+    </div>
+    <div class="err" id="errBox">
+      <b>加载失败</b><br>
+      所有 CDN 源都不可用。<br>
+      请按 <kbd>F12</kbd> 打开控制台，截图发给我；同时反馈：<br>
+      ① 当前网络环境（公司网 / 家庭网 / VPN）<br>
+      ② 控制台红色错误信息
+    </div>
+  </div>
+
+  <!-- Decap CMS：主用 jsdelivr（Cloudflare 节点 + 国内边缘），备份 unpkg，最后回退本地化 vendor -->
+  <script>
+    (function () {
+      var sources = [
+        'https://cdn.jsdelivr.net/npm/decap-cms@3.7.5/dist/decap-cms.js',
+        'https://unpkg.com/decap-cms@3.7.5/dist/decap-cms.js',
+        '../assets/vendor/decap-cms.js'
+      ];
+      var idx = 0;
+      function tryNext(errorMsg) {
+        if (idx >= sources.length) {
+          document.getElementById('spinner').style.display = 'none';
+          document.getElementById('title').style.display = 'none';
+          document.getElementById('sub').style.display = 'none';
+          var e = document.getElementById('errBox');
+          e.classList.add('show');
+          var btn = document.createElement('button');
+          btn.className = 'retry';
+          btn.textContent = '重新加载';
+          btn.onclick = function(){ location.reload(); };
+          e.appendChild(btn);
+          console.error('Decap CMS 加载失败：所有源均不可用', errorMsg);
+          return;
+        }
+        var src = sources[idx++];
+        console.log('尝试加载 Decap CMS:', src);
+        var s = document.createElement('script');
+        s.src = src;
+        s.async = false; // 保持顺序
+        s.onload = function () { console.log('Decap CMS 加载成功:', src); };
+        s.onerror = function () {
+          console.warn('Decap CMS 源失败:', src);
+          tryNext(src + ' 加载失败');
+        };
+        document.head.appendChild(s);
+      }
+      // 超时：30 秒未加载完任一源，触发错误处理
+      setTimeout(function () {
+        if (!window.CMS) {
+          console.warn('30 秒内 Decap CMS 仍未加载完成');
+          tryNext('timeout');
+        }
+      }, 30000);
+      tryNext();
+    })();
+  </script>
 </body>
 </html>
