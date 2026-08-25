@@ -57,14 +57,27 @@
           return;
         }
         var src = sources[idx++];
-        console.log('尝试加载 Decap CMS:', src);
+        console.log('[' + idx + '/' + sources.length + '] 尝试加载 Decap CMS:', src);
         var s = document.createElement('script');
-        s.src = src;
+        var settled = false;
+        var timer = setTimeout(function () {
+          if (settled) return;
+          settled = true;
+          console.warn('源超时（>30s）:', src);
+          if (s.parentNode) s.parentNode.removeChild(s);
+          tryNext();
+        }, 30000);
         s.onload = function () {
+          if (settled) return;
+          settled = true;
+          clearTimeout(timer);
           console.log('Decap CMS 加载成功:', src);
           doInit();
         };
         s.onerror = function () {
+          if (settled) return;
+          settled = true;
+          clearTimeout(timer);
           console.warn('Decap CMS 源失败:', src);
           tryNext();
         };
