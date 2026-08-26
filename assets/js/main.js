@@ -28,17 +28,19 @@
     ).join("");
     const html = `
       <div class="header-inner container">
+        <img class="brand-logo" src="assets/img/logo-ief-ufi.png" alt="IEF 中国·大连 · UFI 国际认证" />
         <a class="brand" href="index.html">
           <span class="logo">${esc(SITE.shortName.slice(0, 2))}</span>
           <span class="txt"><b>${esc(SITE.shortName)}</b><span>${esc(SITE.enName)}</span></span>
-          <img class="brand-logo" src="assets/img/logo-ief-ufi.png" alt="IEF 中国·大连 · UFI 国际认证" />
         </a>
         <button class="nav-toggle" aria-label="菜单" id="navToggle">☰</button>
         <nav class="nav" id="nav">
           ${navLinks}
-          <a class="btn btn-outline nav-cta" href="apply.html">参展报名</a>
-          <a class="btn btn-primary nav-cta" href="register.html">参观预登记</a>
         </nav>
+        <div class="header-actions">
+          <a class="btn btn-outline" href="apply.html">参展报名</a>
+          <a class="btn btn-primary" href="register.html">参观预登记</a>
+        </div>
       </div>`;
     $("#site-header").innerHTML = html;
 
@@ -76,6 +78,7 @@
           </div>
           <div>
             <h4>联系我们</h4>
+            <p>联系人：${esc(c.person || '')}${c.personTitle ? `（${esc(c.personTitle)}）` : ''}</p>
             <p>电话：${esc(c.phone)}</p>
             <p>邮箱：${esc(c.email)}</p>
             <p>微信：${esc(c.wechat)}</p>
@@ -98,7 +101,7 @@
         <p>${esc(h.desc)}</p>
       </div>`).join("");
     const news = NEWS.slice(0, 3).map(n => newsCard(n)).join("");
-    const scopeCats = EXHIBIT_SCOPE.slice(0, 6).map(s =>
+    const scopeCats = EXHIBIT_SCOPE.map(s =>
       `<span class="chip">${esc(s.group)}</span>`).join("");
 
     $("#page-content").innerHTML = `
@@ -122,8 +125,8 @@
       <section class="section">
         <div class="container">
           <div class="section-head">
-            <span class="eyebrow">By the Numbers</span>
-            <h2>一届展会的分量</h2>
+            <span class="eyebrow">Expo Statistics</span>
+            <h2>展会数据</h2>
             <p>用数据看见工业博览会的规模与影响力</p>
           </div>
           <div class="stats">${stats}</div>
@@ -133,7 +136,7 @@
       <section class="section alt">
         <div class="container">
           <div class="section-head">
-            <span class="eyebrow">Why CIIE</span>
+            <span class="eyebrow">Why DIIE</span>
             <h2>为什么选择我们</h2>
             <p>四大核心价值，连接产业上下游</p>
           </div>
@@ -145,7 +148,7 @@
         <div class="container">
           <div class="section-head">
             <span class="eyebrow">Exhibit Scope</span>
-            <h2>六大主题展区</h2>
+            <h2>十大主题展区</h2>
             <p>覆盖工业全产业链的展示范围</p>
           </div>
           <div style="text-align:center; margin-bottom:30px;">${scopeCats}</div>
@@ -252,7 +255,7 @@
         <div class="container">
           <div class="breadcrumb"><a href="index.html">首页</a> / 展品范围</div>
           <h1>展品范围</h1>
-          <p>六大主题展区，覆盖工业全产业链</p>
+          <p>十大主题展区，覆盖工业全产业链</p>
         </div>
       </section>
       <section class="section">
@@ -523,6 +526,7 @@
           <div class="grid grid-2" style="align-items:start; gap:30px;">
             <div class="form-wrap">
               <h2 style="margin-top:0; font-size:1.4rem;">展位 / 合作咨询</h2>
+              <div class="info-row"><div class="ic">👤</div><div><h4>联系人</h4><p>${esc(c.person || '')}${c.personTitle ? `（${esc(c.personTitle)}）` : ''}</p></div></div>
               <div class="info-row"><div class="ic">📞</div><div><h4>咨询电话</h4><p>${esc(c.phone)}（工作日 9:00-18:00）</p></div></div>
               <div class="info-row"><div class="ic">✉️</div><div><h4>电子邮箱</h4><p>${esc(c.email)}</p></div></div>
               <div class="info-row"><div class="ic">💬</div><div><h4>微信公众号</h4><p>${esc(c.wechat)}</p></div></div>
