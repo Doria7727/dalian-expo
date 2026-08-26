@@ -967,7 +967,13 @@
       schedule: renderSchedule, travel: renderTravel, register: renderRegister,
       apply: renderApply, contact: renderContact, guide: renderGuide
     };
-    (map[page] || renderHome)();
+    try {
+      (map[page] || renderHome)();
+    } catch (e) {
+      console.error("Render error:", e);
+      const box = document.getElementById("page-content");
+      if (box) box.innerHTML = '<section class="section container"><pre style="color:#c0392b;white-space:pre-wrap;background:#fff;padding:20px;border-radius:8px;">Render error: ' + String((e&&e.message)||e) + '\n' + String((e&&e.stack)||'') + '</pre></section>';
+    }
   }
 
   document.addEventListener("DOMContentLoaded", boot);
