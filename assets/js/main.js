@@ -30,7 +30,8 @@
       <div class="header-inner container">
         <a class="brand" href="index.html">
           <span class="logo">${esc(SITE.shortName.slice(0, 2))}</span>
-          <span class="txt"><b>${esc(SITE.name)}</b><span>${esc(SITE.enName)}</span></span>
+          <span class="txt"><b>${esc(SITE.shortName)}</b><span>${esc(SITE.enName)}</span></span>
+          <img class="brand-logo" src="assets/img/logo-ief-ufi.png" alt="IEF 中国·大连 · UFI 国际认证" />
         </a>
         <button class="nav-toggle" aria-label="菜单" id="navToggle">☰</button>
         <nav class="nav" id="nav">
@@ -103,10 +104,7 @@
     $("#page-content").innerHTML = `
       <section class="hero">
         <div class="container hero-inner">
-          <div class="hero-top">
-            <span class="brand-mark"><span class="num">${esc(SITE.edition)}</span><span class="ed">${esc(SITE.theme || '数智引领工业')}</span></span>
-            <img class="hero-logo" src="assets/img/logo-ief-ufi.png" alt="IEF 中国·大连 · UFI 国际认证" />
-          </div>
+          <span class="tag">${esc(SITE.edition)} · ${esc(SITE.year)}</span>
           <h1>${esc(SITE.name)}</h1>
           <p class="sub">${esc(ABOUT.intro.slice(0, 60))}……数智引领工业，诚邀您共赴东北智造盛会。</p>
           <div class="hero-meta">
