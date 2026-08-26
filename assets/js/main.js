@@ -137,13 +137,6 @@
       { ic: "🤝", title: "20+ 场同期论坛与供需对接", desc: "高端论坛、技术峰会、轴承专区供需对接专场，搭建产学研商交流桥梁，精准匹配上下游资源。" }
     ].filter(Boolean);
 
-    // 品牌卡片（用 data.json 里 EXHIBITORS 的 14 个 logo 字符 + 名称）
-    const brandCards = EXHIBITORS.map(e => `
-      <div class="brand-card">
-        <div class="brand-logo-tile">${esc(e.logo)}</div>
-        <div class="brand-name">${esc(e.name)}</div>
-      </div>`).join("");
-
     // 展品范围 10 项（带编号）
     const scopeCards = EXHIBIT_SCOPE.map((g, i) => {
       const n = String(i + 1).padStart(2, "0");
@@ -230,21 +223,6 @@
           </div>
           <div class="center" style="margin-top:36px;">
             <a class="btn btn-ghost" href="about.html">查看完整展会介绍 →</a>
-          </div>
-        </div>
-      </section>
-
-      <!-- 参展品牌 -->
-      <section class="block block-alt" id="brands">
-        <div class="container">
-          <div class="section-head">
-            <span class="eyebrow">PAST EXHIBITORS</span>
-            <h2>往届参展品牌</h2>
-            <p>历届汇聚全球工业龙头与国内专精特新，以下为部分往届参展企业</p>
-          </div>
-          <div class="brands-grid">${brandCards}</div>
-          <div class="center" style="margin-top:30px;">
-            <a class="btn btn-ghost" href="exhibitors.html">查看完整展商名录 →</a>
           </div>
         </div>
       </section>

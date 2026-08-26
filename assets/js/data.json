@@ -30,7 +30,6 @@
   },
   "NAV": [
     { "label": "展会介绍", "href": "#about", "page": "about" },
-    { "label": "参展品牌", "href": "#brands", "page": "brands" },
     { "label": "展品范围", "href": "#scope", "page": "scope" },
     { "label": "参展费用", "href": "#pricing", "page": "pricing" },
     { "label": "往届回顾", "href": "#past", "page": "past" },
