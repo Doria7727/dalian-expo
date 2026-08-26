@@ -45,8 +45,8 @@
           </svg>
         </span>
         <span class="brand-txt">
-          <b>${esc(SITE.name.replace(/^2027（.*?）/,'').replace(/[()（）]/g,'').trim() || '大连国际工业博览会')}</b>
-          <span>${esc(SITE.enName ? SITE.enName.toUpperCase().replace(/^DALIAN INTERNATIONAL INDUSTRY EXPO/, 'DALIAN INTERNATIONAL INDUSTRY FAIR') : 'DALIAN INTERNATIONAL INDUSTRY FAIR')}</span>
+          <b>${esc((SITE.name || '').replace(/^2027（.*?）/, '').replace(/[()（）]/g, '').trim() || '大连国际工业博览会')}</b>
+          <span>${esc((SITE.enName || 'DALIAN INTERNATIONAL INDUSTRY FAIR').toUpperCase())}</span>
         </span>
       </a>`;
   }
@@ -123,6 +123,7 @@
      首页（单页，锚点 section 渲染）
      ========================================================= */
   function renderHome() {
+    const c = SITE.contact;
     const stats = SITE.stats.map(s => `<div class="stat-tile"><b>${esc(s.num)}</b><span>${esc(s.label)}</span></div>`).join("");
 
     // 展会亮点 6 项（数据来自 ABOUT.highlights 4 项 + 2 项补充，保证 6 项）
