@@ -29,15 +29,12 @@
     }
   },
   "NAV": [
-    { "label": "首页", "href": "index.html", "page": "home" },
-    { "label": "展会介绍", "href": "about.html", "page": "about" },
-    { "label": "展品范围", "href": "exhibits.html", "page": "exhibits" },
-    { "label": "展商名录", "href": "exhibitors.html", "page": "exhibitors" },
-    { "label": "参展报名", "href": "apply.html", "page": "apply" },
-    { "label": "新闻动态", "href": "news.html", "page": "news" },
-    { "label": "同期活动", "href": "schedule.html", "page": "schedule" },
-    { "label": "交通与酒店", "href": "travel.html", "page": "travel" },
-    { "label": "联系我们", "href": "contact.html", "page": "contact" }
+    { "label": "展会介绍", "href": "#about", "page": "about" },
+    { "label": "参展品牌", "href": "#brands", "page": "brands" },
+    { "label": "展品范围", "href": "#scope", "page": "scope" },
+    { "label": "参展费用", "href": "#pricing", "page": "pricing" },
+    { "label": "往届回顾", "href": "#past", "page": "past" },
+    { "label": "联系我们", "href": "#contact", "page": "contact" }
   ],
   "ABOUT": {
     "intro": "深耕工业领域近三十载，东北地区标杆级专业工业盛会——2027（第29届）大连国际工业博览会，定于2027年5月12日—15日，在大连自贸区国际会展中心盛大举办。本届展会以“数智引领工业”为主题，总规模扩容至6万平方米，预计吸引6万余名高质量专业采购观众，全新增设轴承专题展区，依托本地轴承产业优势打造轴承产业一站式商贸对接平台。",

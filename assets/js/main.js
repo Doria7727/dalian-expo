@@ -1,14 +1,13 @@
 /* =========================================================
-   通用脚本：统一注入头部/底部、移动端菜单、各页面数据渲染
-   数据：由 assets/js/data.json 在 boot() 中异步 fetch 加载（无需其他 script 引入）
+   通用脚本：头部/底部注入、锚点导航、各页面数据渲染
+   数据：assets/js/data.json（异步加载）
+   2027-08-26 全面重构：参考 aiforce 参考站重构为深蓝+橙单页设计
    ========================================================= */
 (function () {
   "use strict";
 
-  /* ---------- 数据（由 assets/js/data.json 异步加载） ---------- */
   let SITE, NAV, ABOUT, EXHIBIT_SCOPE, EXHIBITORS, NEWS, SCHEDULE, TRANSPORT, HOTELS, APPLY_INFO;
 
-  /* ---------- 工具 ---------- */
   const $ = (s, ctx = document) => ctx.querySelector(s);
   const $$ = (s, ctx = document) => Array.from(ctx.querySelectorAll(s));
   const esc = (str) => String(str == null ? "" : str)
@@ -20,63 +19,92 @@
     return `${dt.getFullYear()}-${String(dt.getMonth() + 1).padStart(2, "0")}-${String(dt.getDate()).padStart(2, "0")}`;
   };
 
+  /* 当前是否在首页（用于锚点导航的智能前缀） */
+  const isHome = () => {
+    const p = location.pathname;
+    return p.endsWith("/") || p.endsWith("/index.html") || /\/index\.html?$/i.test(p) || p === "" || p === "/";
+  };
+
+  /* href 处理：首页用纯锚点，子页面加 index.html 前缀 */
+  const navHref = (href) => {
+    if (href && href.startsWith("#")) {
+      return isHome() ? href : "index.html" + href;
+    }
+    return href;
+  };
+
+  /* logo SVG：红 D + IEF + 绿叶 + 中文/英文 */
+  function logoBlock() {
+    return `
+      <a class="brand" href="index.html">
+        <span class="brand-mark">
+          <span class="brand-d">D</span>
+          <span class="brand-ief">IEF</span>
+          <svg class="brand-leaf" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M17 8C8 10 5.9 16.17 3.82 21.34l1.89.66.95-2.3c.48.17.98.3 1.34.3C19 20 22 3 22 3c-1 2-8 2.25-13 3.25S2 11.5 2 13.5s1.75 3.75 1.75 3.75C7 8 17 8 17 8z" fill="#7cb342"/>
+          </svg>
+        </span>
+        <span class="brand-txt">
+          <b>${esc(SITE.name.replace(/^2027（.*?）/,'').replace(/[()（）]/g,'').trim() || '大连国际工业博览会')}</b>
+          <span>${esc(SITE.enName ? SITE.enName.toUpperCase().replace(/^DALIAN INTERNATIONAL INDUSTRY EXPO/, 'DALIAN INTERNATIONAL INDUSTRY FAIR') : 'DALIAN INTERNATIONAL INDUSTRY FAIR')}</span>
+        </span>
+      </a>`;
+  }
+
   /* ---------- 注入头部 ---------- */
   function buildHeader() {
     const cur = document.body.getAttribute("data-page") || "";
-    const navLinks = NAV.map(n =>
-      `<a href="${n.href}" class="${n.page === cur ? "active" : ""}">${esc(n.label)}</a>`
-    ).join("");
+    const navLinks = NAV.map(n => {
+      const href = navHref(n.href);
+      const isActive = isHome() && n.href === "#about" ? "" :
+                       (n.page === cur ? "active" : "");
+      return `<a href="${esc(href)}" class="${isActive}">${esc(n.label)}</a>`;
+    }).join("");
     const html = `
       <div class="header-inner container">
-        <img class="brand-logo" src="assets/img/logo-ief-ufi.png" alt="IEF 中国·大连 · UFI 国际认证" />
-        <a class="brand" href="index.html">
-          <span class="logo">${esc(SITE.shortName.slice(0, 2))}</span>
-          <span class="txt"><b>${esc(SITE.shortName)}</b><span>${esc(SITE.enName)}</span></span>
-        </a>
+        ${logoBlock()}
         <button class="nav-toggle" aria-label="菜单" id="navToggle">☰</button>
         <nav class="nav" id="nav">
           ${navLinks}
         </nav>
-        <div class="header-actions">
-          <a class="btn btn-outline" href="apply.html">参展报名</a>
-          <a class="btn btn-primary" href="register.html">参观预登记</a>
-        </div>
+        <a class="nav-cta" href="${navHref('#contact')}">参展咨询</a>
       </div>`;
-    $("#site-header").innerHTML = html;
+    const headerEl = $("#site-header");
+    if (headerEl) headerEl.innerHTML = html;
 
-    $("#navToggle").addEventListener("click", () => {
-      $("#nav").classList.toggle("open");
-    });
-    // 点击导航项后（移动端）收起菜单
-    $$("#nav a").forEach(a => a.addEventListener("click", () => $("#nav").classList.remove("open")));
+    const t = $("#navToggle");
+    if (t) t.addEventListener("click", () => $("#nav").classList.toggle("open"));
+    $$("#nav a").forEach(a => a.addEventListener("click", () => {
+      const nav = $("#nav"); if (nav) nav.classList.remove("open");
+    }));
   }
 
   /* ---------- 注入底部 ---------- */
   function buildFooter() {
     const c = SITE.contact;
-    const quick = NAV.map(n => `<a href="${n.href}">${esc(n.label)}</a>`).join("");
+    const quick = NAV.map(n => `<a href="${esc(navHref(n.href))}">${esc(n.label)}</a>`).join("");
     $("#site-footer").innerHTML = `
       <div class="container">
-        <div class="footer-grid">
-          <div>
-            <h4>${esc(SITE.name)}</h4>
-            <p>${esc(SITE.edition)} · ${esc(SITE.year)}</p>
-            <p>${esc(SITE.dateText)}</p>
-            <p>${esc(SITE.venue)}</p>
-            <p style="margin-top:14px;">主办：${esc(SITE.organizer)}</p>
+        <div class="footer-cols">
+          <div class="footer-brand">
+            ${logoBlock()}
+            <p class="footer-tagline">数智引领工业 · 东北工业标杆展会</p>
+            <p class="footer-meta">${esc(SITE.edition)} · ${esc(SITE.year)}<br>${esc(SITE.dateText)}<br>${esc(SITE.venue)}</p>
           </div>
-          <div>
+          <div class="footer-col">
             <h4>快速导航</h4>
             ${quick}
-          </div>
-          <div>
-            <h4>参观服务</h4>
+            <a href="apply.html">参展报名</a>
             <a href="register.html">参观预登记</a>
+          </div>
+          <div class="footer-col">
+            <h4>参观服务</h4>
             <a href="exhibitors.html">展商名录</a>
             <a href="schedule.html">日程安排</a>
             <a href="travel.html">交通与酒店</a>
+            <a href="news.html">新闻动态</a>
           </div>
-          <div>
+          <div class="footer-col">
             <h4>联系我们</h4>
             <p>联系人：${esc(c.person || '')}${c.personTitle ? `（${esc(c.personTitle)}）` : ''}</p>
             <p>电话：${esc(c.phone)}</p>
@@ -86,101 +114,294 @@
           </div>
         </div>
         <div class="footer-bottom">
-          © ${SITE.year} ${esc(SITE.name)} 版权所有 · 本网站为展会信息发布平台示例
+          © ${SITE.year} ${esc(SITE.name)} 版权所有 · 主办：${esc(SITE.organizer)}
         </div>
       </div>`;
   }
 
-  /* ---------- 各页面渲染 ---------- */
+  /* =========================================================
+     首页（单页，锚点 section 渲染）
+     ========================================================= */
   function renderHome() {
-    const stats = SITE.stats.map(s => `<div class="stat"><b>${esc(s.num)}</b><span>${esc(s.label)}</span></div>`).join("");
-    const hl = ABOUT.highlights.map(h => `
-      <div class="card">
-        <div class="ic">${h.ic}</div>
-        <h3>${esc(h.title)}</h3>
-        <p>${esc(h.desc)}</p>
+    const stats = SITE.stats.map(s => `<div class="stat-tile"><b>${esc(s.num)}</b><span>${esc(s.label)}</span></div>`).join("");
+
+    // 展会亮点 6 项（数据来自 ABOUT.highlights 4 项 + 2 项补充，保证 6 项）
+    const baseHl = ABOUT.highlights || [];
+    const hl6 = [
+      baseHl[0],
+      baseHl[1],
+      baseHl[2],
+      baseHl[3],
+      { ic: "📣", title: "全域立体化宣传矩阵", desc: "抖音、微信、央视、人民网等全媒体持续投放，参展企业免费享官方公众号推文与现场专访。" },
+      { ic: "🤝", title: "20+ 场同期论坛与供需对接", desc: "高端论坛、技术峰会、轴承专区供需对接专场，搭建产学研商交流桥梁，精准匹配上下游资源。" }
+    ].filter(Boolean);
+
+    // 品牌卡片（用 data.json 里 EXHIBITORS 的 14 个 logo 字符 + 名称）
+    const brandCards = EXHIBITORS.map(e => `
+      <div class="brand-card">
+        <div class="brand-logo-tile">${esc(e.logo)}</div>
+        <div class="brand-name">${esc(e.name)}</div>
       </div>`).join("");
-    const news = NEWS.slice(0, 3).map(n => newsCard(n)).join("");
-    const scopeCats = EXHIBIT_SCOPE.map(s =>
-      `<span class="chip">${esc(s.group)}</span>`).join("");
+
+    // 展品范围 10 项（带编号）
+    const scopeCards = EXHIBIT_SCOPE.map((g, i) => {
+      const n = String(i + 1).padStart(2, "0");
+      const items = (g.items || []).slice(0, 5).map(it => `<span class="scope-tag">${esc(it.text)}</span>`).join("");
+      const more = (g.items || []).length > 5 ? `<span class="scope-more">+${(g.items||[]).length - 5}</span>` : "";
+      return `
+        <div class="scope-card">
+          <div class="scope-num">${n}</div>
+          <h3>${esc(g.group)}</h3>
+          <div class="scope-tags">${items}${more}</div>
+        </div>`;
+    }).join("");
+
+    // 往届回顾占位（照片墙用渐变 + SVG 工厂图标，每张图右上角"往届"标）
+    const pastPhotos = Array.from({length: 12}).map((_, i) => {
+      const hues = [
+        ["#0d2b4e","#1f5f8b"],["#e8541e","#ff8a4c"],["#143a63","#3a86c8"],
+        ["#1a3a5c","#5a8fb8"],["#2a4a6c","#7aa8c8"],["#0a2647","#3d6a96"],
+        ["#3a5a7c","#8aa8c8"],["#1f3a5c","#4f7a9c"],["#264a6c","#6a9abc"],
+        ["#0d3b5e","#2d6b8e"],["#1a4a6e","#5a8aae"],["#2a3a5a","#6a7a9a"]
+      ];
+      const [a,b] = hues[i % hues.length];
+      return `
+        <div class="past-tile" style="background:linear-gradient(135deg,${a},${b});">
+          <div class="past-icon">
+            <svg viewBox="0 0 64 64" fill="none" stroke="rgba(255,255,255,.4)" stroke-width="2">
+              <path d="M8 50 L8 30 L20 22 L20 50 Z M28 50 L28 18 L44 12 L44 50 Z M52 50 L52 26 L60 22 L60 50 Z"/>
+              <line x1="4" y1="50" x2="62" y2="50"/>
+            </svg>
+          </div>
+          <span class="past-label">往届</span>
+        </div>`;
+    }).join("");
 
     $("#page-content").innerHTML = `
-      <section class="hero">
-        <div class="container hero-inner">
-          <span class="tag">${esc(SITE.edition)} · ${esc(SITE.year)}</span>
-          <h1>${esc(SITE.name)}</h1>
-          <p class="sub">${esc(ABOUT.intro.slice(0, 60))}……数智引领工业，诚邀您共赴东北智造盛会。</p>
-          <div class="hero-meta">
-            <div class="mi"><span class="ic">📅</span><div><b>${esc(SITE.dateText)}</b><span>举办时间</span></div></div>
-            <div class="mi"><span class="ic">📍</span><div><b>${esc(SITE.venue)}</b><span>${esc(SITE.venueAddr)}</span></div></div>
-            <div class="mi"><span class="ic">🎫</span><div><b>免费预登记</b><span>专业观众开放</span></div></div>
+      <!-- HERO（左右分屏） -->
+      <section class="hero-split" id="home">
+        <div class="container hero-split-inner">
+          <div class="hero-text">
+            <span class="eyebrow eyebrow-light">${esc(SITE.edition)} · ${esc(SITE.year)}</span>
+            <h1>${esc(SITE.theme)}<br><span class="hero-title">${esc(SITE.name)}</span></h1>
+            <p class="hero-sub">深耕工业领域近三十载，东北地区标杆级专业工业盛会。2027 年 5 月，相约大连自贸区国际会展中心，共启数智工业新未来。</p>
+            <div class="hero-actions">
+              <a class="btn btn-primary" href="${navHref('#contact')}">立即参展咨询 →</a>
+              <a class="btn btn-light" href="${navHref('#about')}">了解展会</a>
+            </div>
           </div>
-          <div class="hero-actions">
-            <a class="btn btn-primary" href="register.html">立即预登记 →</a>
-            <a class="btn btn-outline" href="about.html">了解展会</a>
-          </div>
-        </div>
-      </section>
-
-      <section class="section">
-        <div class="container">
-          <div class="section-head">
-            <span class="eyebrow">Expo Statistics</span>
-            <h2>展会数据</h2>
-            <p>用数据看见工业博览会的规模与影响力</p>
-          </div>
-          <div class="stats">${stats}</div>
-        </div>
-      </section>
-
-      <section class="section alt">
-        <div class="container">
-          <div class="section-head">
-            <span class="eyebrow">Why DIIE</span>
-            <h2>为什么选择我们</h2>
-            <p>四大核心价值，连接产业上下游</p>
-          </div>
-          <div class="grid grid-4">${hl}</div>
-        </div>
-      </section>
-
-      <section class="section">
-        <div class="container">
-          <div class="section-head">
-            <span class="eyebrow">Exhibit Scope</span>
-            <h2>十大主题展区</h2>
-            <p>覆盖工业全产业链的展示范围</p>
-          </div>
-          <div style="text-align:center; margin-bottom:30px;">${scopeCats}</div>
-          <div style="text-align:center;">
-            <a class="btn btn-ghost" href="exhibits.html">查看完整展品范围</a>
+          <div class="hero-visual">
+            <div class="hero-img-placeholder">
+              <div class="hero-img-glow"></div>
+              <svg viewBox="0 0 400 300" fill="none" stroke="rgba(255,255,255,.35)" stroke-width="1.5">
+                <!-- 工厂轮廓占位 -->
+                <rect x="40" y="140" width="80" height="120"/>
+                <rect x="140" y="100" width="80" height="160"/>
+                <rect x="240" y="160" width="80" height="100"/>
+                <path d="M340 120 L340 260 L380 260 L380 160 L360 140 L340 120 Z"/>
+                <circle cx="80" cy="170" r="14" fill="rgba(232,84,30,.4)"/>
+                <circle cx="180" cy="140" r="14" fill="rgba(232,84,30,.4)"/>
+                <line x1="20" y1="260" x2="380" y2="260" stroke-width="2"/>
+                <text x="200" y="290" text-anchor="middle" fill="rgba(255,255,255,.5)" font-size="14" font-family="sans-serif">[ 展会现场照片 · 待替换 ]</text>
+              </svg>
+            </div>
           </div>
         </div>
       </section>
 
-      <section class="section alt">
+      <!-- 数字条 -->
+      <section class="stats-strip">
+        <div class="container stats-strip-inner">
+          ${SITE.stats.slice(0,4).map(s => `<div class="stat-tile"><b>${esc(s.num)}</b><span>${esc(s.label)}</span></div>`).join("")}
+        </div>
+      </section>
+
+      <!-- 关于展会 -->
+      <section class="block" id="about">
         <div class="container">
           <div class="section-head">
-            <span class="eyebrow">Latest News</span>
-            <h2>新闻动态</h2>
-            <p>及时了解展会最新公告与前瞻资讯</p>
+            <span class="eyebrow">ABOUT DIIE</span>
+            <h2>关于大连工博会</h2>
+            <p>${esc(ABOUT.intro.slice(0, 80))}…</p>
           </div>
-          <div class="news-grid">${news}</div>
+          <div class="grid grid-3 hl-grid">
+            ${hl6.map(h => `<div class="card"><div class="ic">${esc(h.ic)}</div><h3>${esc(h.title)}</h3><p>${esc(h.desc)}</p></div>`).join("")}
+          </div>
+          <div class="center" style="margin-top:36px;">
+            <a class="btn btn-ghost" href="about.html">查看完整展会介绍 →</a>
+          </div>
+        </div>
+      </section>
+
+      <!-- 参展品牌 -->
+      <section class="block block-alt" id="brands">
+        <div class="container">
+          <div class="section-head">
+            <span class="eyebrow">PAST EXHIBITORS</span>
+            <h2>往届参展品牌</h2>
+            <p>历届汇聚全球工业龙头与国内专精特新，以下为部分往届参展企业</p>
+          </div>
+          <div class="brands-grid">${brandCards}</div>
           <div class="center" style="margin-top:30px;">
-            <a class="btn btn-ghost" href="news.html">查看更多新闻</a>
+            <a class="btn btn-ghost" href="exhibitors.html">查看完整展商名录 →</a>
           </div>
         </div>
       </section>
 
-      <section class="section" style="background:var(--c-navy); color:#fff;">
-        <div class="container center">
-          <h2 style="color:#fff;">准备好开启您的工业之旅了吗？</h2>
-          <p style="color:#cfe0f0; max-width:620px; margin:0 auto 22px;">完成预登记，即可免费获取电子参观证，享快捷入场与商务配对服务。</p>
-          <a class="btn btn-primary" href="register.html">免费参观预登记 →</a>
+      <!-- 展品范围 -->
+      <section class="block" id="scope">
+        <div class="container">
+          <div class="section-head">
+            <span class="eyebrow">EXHIBITION SCOPE</span>
+            <h2>十大主题展区</h2>
+            <p>覆盖工业制造全产业链，打造东北亚工业前沿技术交流与商贸对接核心载体</p>
+          </div>
+          <div class="scope-grid">${scopeCards}</div>
         </div>
-      </section>`;
+      </section>
+
+      <!-- 展位费用 -->
+      <section class="block block-alt" id="pricing">
+        <div class="container">
+          <div class="section-head">
+            <span class="eyebrow">BOOTH PRICING</span>
+            <h2>展位费用</h2>
+            <p>灵活的展位方案，满足不同规模企业的参展需求</p>
+          </div>
+          <div class="pricing-grid">
+            <div class="price-card price-card-light">
+              <span class="price-tag">STANDARD BOOTH</span>
+              <h3>标准展位</h3>
+              <div class="price-line"><b>国内企业（3m×3m）</b><span class="price-num">8,000 <i>元/个</i></span></div>
+              <div class="price-line"><b>国外企业（3m×3m）</b><span class="price-num">3,000 <i>美元/个</i></span></div>
+              <p class="price-note">配备：展板、加高楣板、80 方柱型材、一张洽谈桌、两把折叠椅、地毯、两只射灯及一个 5A 电源插座（仅限于 300W 以内小功率视听设备使用）。主通道两侧展位加收 20%。</p>
+            </div>
+            <div class="price-card price-card-dark">
+              <span class="price-tag">RAW SPACE</span>
+              <h3>室内光地</h3>
+              <div class="price-line"><b>国内企业</b><span class="price-num">800 <i>元/㎡</i></span></div>
+              <div class="price-line"><b>国外企业</b><span class="price-num">300 <i>美元/㎡</i></span></div>
+              <p class="price-note">室内光地不少于 36 平方米，主通道两侧展位加价 20%。展台特别装修，特装管理费由参展商自理，适合品牌特装展示，自由设计搭建。</p>
+              <a class="btn btn-primary" href="apply.html">立即申请展位 →</a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 往届回顾 -->
+      <section class="block" id="past">
+        <div class="container">
+          <div class="section-head">
+            <span class="eyebrow">PAST EDITIONS</span>
+            <h2>往届回顾</h2>
+            <p>历届展会盛况，记录每一届的精彩瞬间与商贸成果</p>
+          </div>
+          <div class="past-grid">${pastPhotos}</div>
+        </div>
+      </section>
+
+      <!-- 联系组委会 -->
+      <section class="block block-alt" id="contact">
+        <div class="container">
+          <div class="section-head">
+            <span class="eyebrow">CONTACT US</span>
+            <h2>联系组委会</h2>
+            <p>展位详情、参展政策、专区合作方案均可联系组委会咨询，抢抓东北市场先机</p>
+          </div>
+          <div class="contact-grid">
+            <!-- 左：联系方式 -->
+            <div class="contact-info">
+              <h3>组委会联系方式</h3>
+              <div class="ci-list">
+                <div class="ci-row">
+                  <div class="ci-ic">📞</div>
+                  <div class="ci-body">
+                    <span>联系人 / 电话（微信同号）</span>
+                    <b>${esc(c.person || '李玥')} | ${esc(c.phone)}</b>
+                  </div>
+                </div>
+                <div class="ci-row">
+                  <div class="ci-ic">✉️</div>
+                  <div class="ci-body">
+                    <span>电子邮箱</span>
+                    <b>${esc(c.email)}</b>
+                  </div>
+                </div>
+                <div class="ci-row">
+                  <div class="ci-ic">🏢</div>
+                  <div class="ci-body">
+                    <span>办公地址</span>
+                    <b>${esc(c.address)}</b>
+                  </div>
+                </div>
+                <div class="ci-row">
+                  <div class="ci-ic">📅</div>
+                  <div class="ci-body">
+                    <span>展会时间 / 地点</span>
+                    <b>${esc(SITE.dateText)} · ${esc(SITE.venue)}</b>
+                  </div>
+                </div>
+              </div>
+              <div class="qr-block">
+                <div class="qr-placeholder">
+                  <svg viewBox="0 0 60 60" fill="#1a2238"><rect x="0" y="0" width="20" height="20"/><rect x="40" y="0" width="20" height="20"/><rect x="0" y="40" width="20" height="20"/><rect x="6" y="6" width="8" height="8" fill="#fff"/><rect x="46" y="6" width="8" height="8" fill="#fff"/><rect x="6" y="46" width="8" height="8" fill="#fff"/><rect x="24" y="4" width="4" height="4"/><rect x="32" y="8" width="4" height="4"/><rect x="28" y="20" width="4" height="4"/><rect x="24" y="28" width="4" height="4"/><rect x="32" y="32" width="4" height="4"/><rect x="40" y="28" width="4" height="4"/><rect x="44" y="40" width="4" height="4"/><rect x="52" y="44" width="4" height="4"/><rect x="24" y="48" width="4" height="4"/><rect x="36" y="52" width="4" height="4"/></svg>
+                </div>
+                <p>扫码加微信<br>展会咨询 / 商务对接</p>
+              </div>
+            </div>
+            <!-- 右：参展咨询表单 -->
+            <div class="contact-form-card">
+              <h3>参展咨询</h3>
+              <p class="form-lead">填写以下信息，组委会将在 24 小时内与您联系</p>
+              <form id="homeContactForm" novalidate>
+                <div class="cf-row">
+                  <div class="cf-field"><label>公司名称 <span class="req">*</span></label><input name="company" required placeholder="请输入公司名称"></div>
+                  <div class="cf-field"><label>联系人 <span class="req">*</span></label><input name="contact" required placeholder="您的姓名"></div>
+                </div>
+                <div class="cf-row">
+                  <div class="cf-field"><label>联系电话 <span class="req">*</span></label><input name="phone" required placeholder="11 位手机号"></div>
+                  <div class="cf-field"><label>邮箱</label><input name="email" type="email" placeholder="可选"></div>
+                </div>
+                <div class="cf-field"><label>意向展区</label>
+                  <select name="zone">
+                    <option value="">请选择（可选）</option>
+                    ${EXHIBIT_SCOPE.map(g => `<option value="${esc(g.group)}">${esc(g.group)}</option>`).join("")}
+                  </select>
+                </div>
+                <div class="cf-field"><label>咨询内容</label>
+                  <textarea name="message" rows="3" placeholder="展位类型 / 面积 / 特殊需求 等"></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary cf-submit">提交咨询</button>
+                <div class="form-success hidden" id="homeContactOk"></div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </section>
+    `;
+
+    // 首页联系表单提交（前端校验 + 本地保存示例）
+    const form = $("#homeContactForm");
+    if (form) {
+      form.addEventListener("submit", (e) => {
+        e.preventDefault();
+        const data = Object.fromEntries(new FormData(form).entries());
+        if (!data.company || !data.contact || !/^1[0-9]{10}$/.test(data.phone||"")) {
+          alert("请填写公司名称、联系人，并确保手机号格式正确");
+          return;
+        }
+        try { localStorage.setItem("diie_inquiry_" + Date.now(), JSON.stringify(data)); } catch(_) {}
+        const ok = $("#homeContactOk");
+        ok.textContent = `✅ 提交成功！我们将在 24 小时内与 ${data.contact} 联系。`;
+        ok.classList.remove("hidden");
+        form.reset();
+      });
+    }
   }
 
+  /* =========================================================
+     子页面渲染（保留原逻辑，子页面继续用旧 CSS 类）
+     ========================================================= */
   function newsCard(n) {
     return `
       <article class="card news-card">
@@ -282,7 +503,6 @@
           <p class="desc">${esc(e.desc)}</p>
         </div>
       </div>`).join("");
-
     $("#page-content").innerHTML = `
       <section class="page-hero">
         <div class="container">
@@ -297,7 +517,6 @@
           <div class="grid grid-2" id="exhGrid">${cards}</div>
         </div>
       </section>`;
-
     $$(".filter-btn").forEach(btn => btn.addEventListener("click", () => {
       $$(".filter-btn").forEach(b => b.classList.remove("active"));
       btn.classList.add("active");
@@ -484,7 +703,6 @@
           </div>
         </div>
       </section>`;
-
     const form = $("#regForm");
     form.addEventListener("submit", (e) => {
       e.preventDefault();
@@ -502,7 +720,7 @@
       if (!data.industry) setErr("industry", "请选择所属行业");
       if (data.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) setErr("email", "邮箱格式不正确");
       if (!ok) return;
-      try { localStorage.setItem("ciie_reg_" + Date.now(), JSON.stringify(data)); } catch (_) {}
+      try { localStorage.setItem("diie_reg_" + Date.now(), JSON.stringify(data)); } catch (_) {}
       const okBox = $("#regOk");
       okBox.textContent = `✅ 登记成功！${esc(data.name)}，感谢您的预登记，电子参观证将发送至 ${esc(data.phone)}。`;
       okBox.classList.remove("hidden");
@@ -565,54 +783,33 @@
           </div>
           <div class="guide-block">
             <h3>二、如何更新各栏目</h3>
-            <p>用文本编辑器（如记事本、VS Code）打开 <code>data.json</code>，找到对应板块的 JSON 键修改（键名与下方一致）：</p>
+            <p>用文本编辑器（如记事本、VS Code）打开 <code>data.json</code>，找到对应板块的 JSON 键修改：</p>
             <ul>
-              <li><b>展会基础信息</b>：修改 <code>SITE</code>（名称、时间、地点、数据指标、联系方式）。</li>
-              <li><b>展会介绍</b>：修改 <code>ABOUT</code>（简介、价值点、深入段落）。</li>
-              <li><b>展品范围</b>：修改 <code>EXHIBIT_SCOPE</code> 的展区与条目。</li>
-              <li><b>展商名录</b>：在 <code>EXHIBITORS</code> 数组里增删企业（<code>category</code> 需与展区名称一致才能被筛选）。</li>
-              <li><b>新闻动态</b>：在 <code>NEWS</code> 数组顶部插入新条目，<code>id</code> 保持唯一；<code>body</code> 为段落数组。</li>
-              <li><b>日程安排</b>：修改 <code>SCHEDULE</code>。</li>
-              <li><b>交通与酒店</b>：修改 <code>TRANSPORT</code> 与 <code>HOTELS</code>。</li>
-              <li><b>导航栏目</b>：修改 <code>NAV</code> 可增删顶部菜单项。</li>
+              <li><b>展会基础信息</b>：修改 <code>SITE</code>。</li>
+              <li><b>展会介绍</b>：修改 <code>ABOUT</code>。</li>
+              <li><b>展品范围</b>：修改 <code>EXHIBIT_SCOPE</code>。</li>
+              <li><b>展商名录</b>：修改 <code>EXHIBITORS</code>。</li>
+              <li><b>新闻动态</b>：修改 <code>NEWS</code>。</li>
+              <li><b>导航栏目</b>：修改 <code>NAV</code>。</li>
             </ul>
           </div>
           <div class="guide-block">
             <h3>三、新增一条新闻示例</h3>
             <pre>{
   "id": "n07",
-  "title": "这里填新闻标题",
+  "title": "新闻标题",
   "date": "2026-05-10",
   "category": "展会公告",
   "summary": "一句话摘要。",
   "cover": "linear-gradient(135deg,#0d2b4e,#1f5f8b)",
   "body": [
-    { "text": "第一段正文。" },
-    { "text": "第二段正文。" }
+    { "text": "第一段正文。" }
   ]
 }</pre>
-            <p>把以上对象粘贴到 <code>NEWS</code> 数组的最前面（<code>[</code> 之后），保存即可。注意正文每段是 <code>{ "text": "..." }</code> 的形式。</p>
           </div>
           <div class="guide-block">
-            <h3>四、预登记表单对接（上线建议）</h3>
-            <p>当前「参观预登记」与「参展报名」两个表单均在前端校验并本地保存（演示用）。正式上线时，可在 <code>main.js</code> 的 <code>renderRegister</code> / <code>renderApply</code> 提交逻辑中，将 <code>data</code> 通过 <code>fetch</code> 发送到贵司的表单系统、CRM 或邮件接口，即可收集真实的观众与展商报名数据。</p>
-          </div>
-          <div class="guide-block">
-            <h3>五、域名与免费托管方案</h3>
-            <p><b>是否需要买域名？</b>不需要。本网站是纯静态页面（无数据库、无后端），可直接部署到免费托管平台，平台会自动分配一个免费子域名（如 <code>xxx.netlify.app</code>、<code>username.github.io</code>），立即对外访问，零成本。</p>
-            <p><b>什么时候才需要买域名？</b>当您希望用专属品牌域名（如 <code>dalian-expo.com</code>）提升专业度、统一企业邮箱、便于记忆与搜索时，再花约 60–100 元/年 购买即可；上述免费平台都支持一键绑定自定义域名。</p>
-            <p><b>推荐免费托管（任选其一）：</b></p>
-            <ul>
-              <li><b>Netlify / Vercel</b>：把整个网站文件夹拖拽上传即可，秒级生成 <code>*.netlify.app</code> 子域名，自动 HTTPS、支持自定义域名，最适合不懂技术的运营人员。</li>
-              <li><b>Cloudflare Pages</b>：免费 <code>*.pages.dev</code> 子域名，国内访问相对更稳定。</li>
-              <li><b>GitHub Pages</b>：免费 <code>*.github.io</code> 子域名，适合有 Git 基础；国内访问偶尔偏慢。</li>
-              <li><b>国内方案（面向中国大陆观众）</b>：腾讯云 COS / 阿里云 OSS 静态网站托管、Gitee Pages、Coding Pages。若绑定国内域名并用于境内服务器，需办理 ICP 备案（约 1–2 周，平台有指引）。</li>
-            </ul>
-            <p><b>两种部署方式：</b></p>
-            <ul>
-              <li><b>方式 A（带后台，推荐）</b>：把本文件夹推送到 GitHub 仓库，在 Netlify 用「Import from Git」导入，并启用 Identity + Git Gateway（详见《后台使用说明.md》）。之后在 <code>/admin</code> 后台改内容，保存即自动重新发布。</li>
-              <li><b>方式 B（纯静态，无后台）</b>：打开 app.netlify.com 注册登录，把整个文件夹拖到 “Deploy manually” 区域，几十秒后得到免费子域名即可对外宣传。每次修改 <code>data.json</code> 后重新拖上去覆盖即可。</li>
-            </ul>
+            <h3>四、域名与免费托管</h3>
+            <p>本网站是纯静态页面，可直接部署到 Cloudflare Pages / Netlify / Vercel 等免费平台，绑定自定义域名（约 60-100 元/年）即可上线。</p>
           </div>
         </div>
       </section>`;
@@ -633,7 +830,6 @@
         <p style="margin:0;">${esc(f.a)}</p>
       </div>`).join("");
     const zones = EXHIBIT_SCOPE.map(g => `<option value="${esc(g.group)}">${esc(g.group)}</option>`).join("");
-
     $("#page-content").innerHTML = `
       <section class="page-hero">
         <div class="container">
@@ -678,7 +874,7 @@
                   <div class="field full"><label>备注 / 特殊需求</label><textarea name="remark" rows="3" placeholder="可填写期望展位位置、搭建需求等"></textarea></div>
                 </div>
                 <button type="submit" class="btn btn-primary" style="margin-top:18px; width:100%; justify-content:center;">提交参展报名</button>
-                <p class="form-note">提交即表示同意主办方与您联系对接参展事宜。本示例表单在前端校验后本地保存，正式上线可对接表单/CRM 系统。</p>
+                <p class="form-note">提交即表示同意主办方与您联系对接参展事宜。本示例表单在前端校验后本地保存。</p>
                 <div class="form-success hidden" id="applyOk"></div>
               </form>
             </div>
@@ -689,15 +885,10 @@
               <div class="timeline">${steps}</div>
               <h3 style="margin-top:26px;">常见问题</h3>
               ${faq}
-              <div class="guide-block" style="margin-top:18px;">
-                <h3 style="margin-top:0;">专属顾问</h3>
-                <p style="margin:0;">电话：${esc(SITE.contact.phone)} · 邮箱：${esc(SITE.contact.email)}</p>
-              </div>
             </div>
           </div>
         </div>
       </section>`;
-
     const form = $("#applyForm");
     const typeSel = form.querySelector('[name="boothType"]');
     const stdWrap = $("#stdWrap"), rawWrap = $("#rawWrap");
@@ -708,7 +899,6 @@
     };
     typeSel.addEventListener("change", syncBooth);
     syncBooth();
-
     form.addEventListener("submit", (e) => {
       e.preventDefault();
       let ok = true;
@@ -730,7 +920,7 @@
       if (!data.products) setErr("products", "请填写主营产品/展品类别");
       if (data.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) setErr("email", "邮箱格式不正确");
       if (!ok) return;
-      try { localStorage.setItem("ciie_apply_" + Date.now(), JSON.stringify(data)); } catch (_) {}
+      try { localStorage.setItem("diie_apply_" + Date.now(), JSON.stringify(data)); } catch (_) {}
       const okBox = $("#applyOk");
       okBox.textContent = `✅ 报名提交成功！${esc(data.company)}，${esc(data.contact)}，组委会将尽快与您联系对接展位事宜。`;
       okBox.classList.remove("hidden");
@@ -751,7 +941,7 @@
     btn.addEventListener("click", () => window.scrollTo({ top: 0, behavior: "smooth" }));
   }
 
-  /* ---------- 启动（先异步加载数据再渲染） ---------- */
+  /* ---------- 启动 ---------- */
   async function boot() {
     try {
       const res = await fetch("assets/js/data.json", { cache: "no-store" });
@@ -764,7 +954,7 @@
     } catch (e) {
       const box = document.getElementById("page-content");
       const msg = esc(String((e && e.message) || e));
-      if (box) box.innerHTML = '<section class="section container"><p style="color:#c0392b;">内容加载失败：' + msg + '。请通过本地服务器或部署后的网址访问（直接双击 index.html 因浏览器安全限制可能无法加载数据文件）。</p></section>';
+      if (box) box.innerHTML = '<section class="section container"><p style="color:#c0392b;">内容加载失败：' + msg + '。请通过本地服务器或部署后的网址访问。</p></section>';
       return;
     }
     buildHeader();
