@@ -185,7 +185,7 @@
             </div>
             <div class="hero-actions">
               <a class="btn btn-primary" href="${navHref('#contact')}">申请参展 →</a>
-              <a class="btn btn-outline" href="${navHref('#about')}">了解更多</a>
+              <a class="btn btn-outline" href="about.html">了解更多</a>
             </div>
           </div>
           <div class="hero-visual">
