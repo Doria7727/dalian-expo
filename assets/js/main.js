@@ -740,8 +740,20 @@
   }
 
   function renderTravel() {
-    const tp = TRANSPORT.map(t => `
-      <div class="info-row"><div class="ic">${t.ic}</div><div><h4>${esc(t.h)}</h4><p>${esc(t.p)}</p></div></div>`).join("");
+    const distancesHtml = TRANSPORT.distances.map(d => `
+      <div class="distance-tile">
+        <div class="distance-value">${esc(d.value)}</div>
+        <div class="distance-label">${esc(d.label)}</div>
+        <div class="distance-note">${esc(d.note || "")}</div>
+      </div>`).join("");
+    const routesHtml = TRANSPORT.routes.map(r => `
+      <li class="route-item">
+        <span class="route-num">${r.num}</span>
+        <div class="route-body">
+          <h4>${esc(r.title)}</h4>
+          <p>${esc(r.desc)}</p>
+        </div>
+      </li>`).join("");
     const ht = HOTELS.map(h => `
       <div class="card hotel-card">
         <h3 style="margin-top:0;">${esc(h.name)}</h3>
@@ -754,25 +766,33 @@
         <div class="container">
           <div class="breadcrumb"><a href="index.html">首页</a> / 交通与酒店</div>
           <h1>交通与酒店指南</h1>
-          <p>多种出行方案与周边协议酒店，助您轻松规划行程</p>
+          <p>展馆位于大连保税区，多种出行方案与周边协议酒店，助您轻松规划行程</p>
         </div>
       </section>
       <section class="section">
         <div class="container">
-          <div class="grid grid-2">
-            <div>
-              <h2 style="font-size:1.4rem;">如何抵达</h2>
-              <div style="background:#fff; border:1px solid var(--c-line); border-radius:var(--radius); padding:20px;">${tp}</div>
+          <div class="grid grid-2" style="align-items:stretch; gap:32px;">
+            <div class="venue-figure">
+              <img src="assets/img/travel/travel-overview.jpg" alt="大连自贸区国际会展中心实景及周边" />
             </div>
             <div>
-              <h2 style="font-size:1.4rem;">展馆地址</h2>
-              <div style="background:var(--c-navy); color:#fff; border-radius:var(--radius); padding:26px;">
-                <p style="font-size:1.2rem; margin:0 0 8px;">${esc(SITE.venue)}</p>
-                <p style="color:#cfe0f0; margin:0;">${esc(SITE.venueAddr)}</p>
-                <p style="color:#cfe0f0; margin:14px 0 0;">建议导航至「国家会展中心 P 停车场」，展期提供免费接驳摆渡车。</p>
+              <h2 style="font-size:1.3rem; margin:0 0 10px;">展馆介绍</h2>
+              <p style="color:var(--c-steel); margin:0 0 20px;">${esc(TRANSPORT.intro)}</p>
+              <h2 style="font-size:1.3rem; margin:0 0 14px;">展馆地址</h2>
+              <div style="background:var(--c-navy); color:#fff; border-radius:var(--radius); padding:18px 22px; margin-bottom:18px;">
+                <p style="font-size:1.15rem; font-weight:700; margin:0 0 6px;">${esc(SITE.venue)}</p>
+                <p style="color:#cfe0f0; margin:0; font-size:.95rem;">${esc(TRANSPORT.addr)}</p>
               </div>
+              <h3 style="font-size:1rem; color:var(--c-steel); margin:0 0 10px; text-transform:uppercase; letter-spacing:1px;">距展馆</h3>
+              <div class="distance-grid">${distancesHtml}</div>
             </div>
           </div>
+        </div>
+      </section>
+      <section class="section alt">
+        <div class="container">
+          <div class="section-head"><span class="eyebrow">Route</span><h2>出行路线</h2><p>5 种主要出行方式，从机场 / 火车站 / 高铁 / 高速直达展馆</p></div>
+          <ul class="route-list">${routesHtml}</ul>
         </div>
       </section>
       <section class="section alt">
@@ -782,7 +802,6 @@
         </div>
       </section>`;
   }
-
   function renderRegister() {
     $("#page-content").innerHTML = `
       <section class="page-hero">
