@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>2027 大连国际工业博览会 · 手机版</title>
+<style>
+  :root{
+    --navy:#0a1f3d; --navy2:#13315c; --accent:#e8541e; --accent2:#ff7a3d;
+    --ink:#1f2733; --muted:#6b7785; --bg:#eef1f6; --card:#fff;
+    --line:#e6ebf2; --soft:#f6f8fb;
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  html,body{margin:0; padding:0; background:var(--bg); color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;
+    line-height:1.7; -webkit-font-smoothing:antialiased;}
+  img{display:block; max-width:100%;}
+  a{color:inherit;}
+  .wrap{max-width:480px; margin:0 auto; background:#fff; min-height:100vh;
+    padding-bottom:96px; box-shadow:0 0 40px rgba(10,31,61,.06);}
+  .eyebrow{display:inline-block; font-size:.72rem; letter-spacing:.18em;
+    color:var(--accent); font-weight:700; margin-bottom:10px;}
+  .sec{padding:30px 20px; border-bottom:8px solid var(--bg);}
+  .sec h2{font-size:1.3rem; margin:0 0 16px; color:var(--navy); font-weight:800;}
+  .sec h2 .bar{display:inline-block; width:6px; height:1.05em; background:var(--accent);
+    border-radius:3px; margin-right:9px; vertical-align:-2px;}
+
+  /* Hero */
+  .hero{background:linear-gradient(155deg,#0a1f3d 0%,#16366a 52%,#e8541e 150%);
+    color:#fff; padding:54px 24px 40px; text-align:center; position:relative; overflow:hidden;}
+  .hero::after{content:""; position:absolute; right:-60px; top:-60px; width:200px; height:200px;
+    background:radial-gradient(circle,rgba(255,122,61,.35),transparent 70%);}
+  .badge{display:inline-block; font-size:.74rem; font-weight:700; letter-spacing:.1em;
+    border:1px solid rgba(255,255,255,.5); border-radius:30px; padding:5px 14px; margin-bottom:18px;}
+  .hero h1{font-size:1.7rem; line-height:1.35; margin:0 0 14px; font-weight:800; letter-spacing:.01em;}
+  .hero .theme{font-size:1rem; color:#ffd2b8; font-weight:600; margin-bottom:20px;}
+  .hero .meta{font-size:.95rem; opacity:.92; line-height:1.9;}
+  .hero .meta b{color:#fff; font-weight:700;}
+  .hero-cta{display:block; margin:24px auto 0; max-width:280px; background:var(--accent);
+    color:#fff; text-decoration:none; font-weight:800; font-size:1.05rem; padding:15px;
+    border-radius:14px; box-shadow:0 10px 24px rgba(232,84,30,.4);}
+  .hero-cta:active{transform:translateY(1px);}
+
+  /* Stats */
+  .stats{display:grid; grid-template-columns:repeat(2,1fr); gap:12px; padding:20px;}
+  .stat{background:var(--soft); border:1px solid var(--line); border-radius:14px; padding:16px 12px; text-align:center;}
+  .stat b{display:block; font-size:1.45rem; color:var(--navy); font-weight:800; line-height:1.2;}
+  .stat span{font-size:.8rem; color:var(--muted);}
+
+  /* Reasons */
+  .reason{position:relative; background:#fff; border:1px solid var(--line); border-radius:14px;
+    padding:18px 18px 18px 22px; margin-bottom:14px;}
+  .reason::before{content:""; position:absolute; left:0; top:14px; bottom:14px; width:4px;
+    background:var(--accent); border-radius:4px;}
+  .reason h3{margin:0 0 8px; font-size:1.05rem; color:var(--navy); font-weight:800;}
+  .reason p{margin:0; font-size:.9rem; color:var(--muted); line-height:1.75;}
+
+  /* Scope tags */
+  .tags{display:flex; flex-wrap:wrap; gap:9px;}
+  .tag{background:var(--soft); border:1px solid var(--line); border-radius:20px;
+    padding:8px 14px; font-size:.82rem; color:var(--navy); font-weight:600;}
+
+  /* Image block */
+  .figure{margin:0; border-radius:14px; overflow:hidden; border:1px solid var(--line);}
+  .figure img{width:100%;}
+  .cap{font-size:.78rem; color:var(--muted); text-align:center; margin-top:8px;}
+
+  /* Routes */
+  .route{display:flex; gap:14px; padding:14px 0; border-bottom:1px dashed var(--line);}
+  .route:last-child{border-bottom:0;}
+  .route .num{flex:0 0 30px; height:30px; border-radius:50%; background:var(--navy); color:#fff;
+    font-weight:800; font-size:.9rem; display:flex; align-items:center; justify-content:center;}
+  .route h4{margin:2px 0 4px; font-size:.98rem; color:var(--navy);}
+  .route p{margin:0; font-size:.84rem; color:var(--muted);}
+
+  /* Contact */
+  .contact{background:var(--navy); color:#fff; padding:28px 20px; text-align:center;}
+  .contact h2{color:#fff; margin:0 0 14px;}
+  .contact p{margin:6px 0; font-size:.92rem; opacity:.92;}
+  .contact a{color:#ffd2b8; font-weight:700; text-decoration:none;}
+
+  /* Fixed bottom bar */
+  .bar{position:fixed; bottom:0; left:0; right:0; max-width:480px; margin:0 auto;
+    background:rgba(255,255,255,.96); backdrop-filter:blur(8px); border-top:1px solid var(--line);
+    padding:10px 16px calc(10px + env(safe-area-inset-bottom)); display:flex; gap:10px; z-index:60;}
+  .bar a{flex:1; text-align:center; padding:14px; border-radius:13px; font-weight:800;
+    text-decoration:none; font-size:1rem;}
+  .bar .primary{background:var(--accent); color:#fff; box-shadow:0 6px 16px rgba(232,84,30,.35);}
+  .bar .ghost{background:#fff; color:var(--accent); border:1.5px solid var(--accent);}
+
+  .reveal{opacity:0; transform:translateY(16px); transition:.5s ease;}
+  .reveal.in{opacity:1; transform:none;}
+  .loading{padding:60px 20px; text-align:center; color:var(--muted);}
+</style>
+</head>
+<body>
+<div class="wrap" id="app"><div class="loading">页面加载中…</div></div>
+
+<div class="bar">
+  <a class="ghost" href="tel:18624268832">电话咨询</a>
+  <a class="primary" href="apply.html">立即参展报名</a>
+</div>
+
+<script>
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+
+fetch('assets/js/data.json?t=' + Date.now())
+  .then(r=>r.json())
+  .then(render)
+  .catch(e=>{document.getElementById('app').innerHTML='<div class="loading">数据加载失败，请刷新重试</div>';});
+
+function render(d){
+  const s = d.SITE||{};
+  const why = d.WHY_EXHIBIT||[];
+  const scope = d.EXHIBIT_SCOPE||[];
+  const trans = d.TRANSPORT||{};
+  const routes = trans.routes||[];
+  const stats = s.stats||[];
+
+  const statsHtml = stats.map(x=>`<div class="stat"><b>${esc(x.num)}</b><span>${esc(x.label)}</span></div>`).join('');
+  const whyHtml = why.map(w=>`<div class="reason reveal"><h3>${esc(w.num)}、${esc(w.title)}</h3><p>${esc(w.desc).replace(/\n/g,'<br>')}</p></div>`).join('');
+  const tagsHtml = scope.map(g=>`<span class="tag">${esc(g.group)}</span>`).join('');
+  const routesHtml = routes.map(r=>`<div class="route"><div class="num">${esc(r.num)}</div><div><h4>${esc(r.title)}</h4><p>${esc(r.desc)}</p></div></div>`).join('');
+
+  const html = `
+  <section class="hero">
+    <span class="badge">${esc(s.edition||'第29届')} · 大连自贸区国际会展中心</span>
+    <h1>${esc(s.name||'大连国际工业博览会')}</h1>
+    <div class="theme">主题：${esc(s.theme||'数智引领工业')}</div>
+    <div class="meta">
+      <b>${esc(s.dateText||'')}</b><br>
+      地点：${esc(s.venue||'大连自贸区国际会展中心')}
+    </div>
+    <a class="hero-cta" href="apply.html">立即参展报名 →</a>
+  </section>
+
+  <div class="stats">${statsHtml}</div>
+
+  <section class="sec">
+    <h2><span class="bar"></span>五大参展理由</h2>
+    ${whyHtml}
+  </section>
+
+  <section class="sec">
+    <h2><span class="bar"></span>展品范围</h2>
+    <div class="tags">${tagsHtml}</div>
+  </section>
+
+  <section class="sec">
+    <h2><span class="bar"></span>往届参展品牌</h2>
+    <figure class="figure"><img src="assets/img/brands/brands-overview.jpg" alt="往届参展品牌" loading="lazy"></figure>
+    <div class="cap">仅选取部分品牌 logo，排名不分先后</div>
+  </section>
+
+  <section class="sec">
+    <h2><span class="bar"></span>展馆 & 交通路线</h2>
+    <figure class="figure" style="margin-bottom:16px;"><img src="assets/img/travel/travel-overview.jpg" alt="展馆实景" loading="lazy"></figure>
+    <p style="margin:0 0 4px;font-weight:700;color:var(--navy);">展馆地址</p>
+    <p style="margin:0 0 16px;color:var(--muted);font-size:.9rem;">${esc(s.venue||'')} · ${esc(trans.addr||'')}</p>
+    ${routesHtml}
+  </section>
+
+  <section class="contact">
+    <h2 style="color:#fff;">参展咨询</h2>
+    <p>联系人：${esc((s.contact&&s.contact.person)||'李玥')}</p>
+    <p>电话：<a href="tel:18624268832">186 2426 8832</a></p>
+    <p>邮箱：<a href="mailto:1060200619@qq.com">1060200619@qq.com</a></p>
+    <p style="margin-top:14px;font-size:.8rem;opacity:.7;">主办：${esc(s.organizer||'')}</p>
+  </section>
+  `;
+
+  document.getElementById('app').innerHTML = html;
+
+  // 进入视口淡入
+  const io = new IntersectionObserver((es)=>{
+    es.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target);} });
+  },{threshold:.12});
+  document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+}
+</script>
+</body>
+</html>
