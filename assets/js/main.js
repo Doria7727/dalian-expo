@@ -150,12 +150,12 @@
         <img src="${esc(p.img)}" alt="${esc(p.alt || '往届大连工博会现场')}" loading="lazy" />
       </div>`).join("");
 
-    // 首页 Hero 右侧：往届照片轮播（与 #past 区块共享 PAST_PHOTOS 数据源）
-    const heroSlides = (PAST_PHOTOS || []).slice(0, 8).map((p, i) => `
+    // 首页 Hero 右侧：往届照片轮播（与 #past 区块共享 PAST_PHOTOS 数据源，全部 16 张循环播放）
+    const heroSlides = (PAST_PHOTOS || []).map((p, i) => `
       <div class="hero-slide${i === 0 ? ' active' : ''}">
         <img src="${esc(p.img)}" alt="${esc(p.alt || '往届大连工博会现场')}" loading="${i === 0 ? 'eager' : 'lazy'}" />
       </div>`).join("");
-    const heroDots = (PAST_PHOTOS || []).slice(0, 8).map((p, i) => `
+    const heroDots = (PAST_PHOTOS || []).map((p, i) => `
       <button class="hero-slide-dot${i === 0 ? ' active' : ''}" data-idx="${i}" aria-label="第 ${i+1} 张"></button>`).join("");
 
     $("#page-content").innerHTML = `
@@ -196,7 +196,7 @@
                 <div class="hero-slide-dots">${heroDots}</div>
                 <button class="hero-slide-arrow" data-dir="1" aria-label="下一张">›</button>
               </div>
-              <div class="hero-slide-counter"><span id="heroSlideCur">1</span> / ${(PAST_PHOTOS || []).slice(0, 8).length}</div>
+              <div class="hero-slide-counter"><span id="heroSlideCur">1</span> / ${(PAST_PHOTOS || []).length}</div>
             </div>
           </div>
         </div>
