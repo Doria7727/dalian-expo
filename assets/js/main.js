@@ -1004,7 +1004,7 @@
       <section class="section">
         <div class="container">
           <div class="brands-page-board">
-            <img src="assets/img/brands/brands-overview.png" alt="往届参展品牌：GROB / Mazak / EMAG / Panasonic / Hexagon / ZEISS / SANYO / FLUKE / KUKA / FANUC / YASKAWA / 三菱 / SMC / 一汽-大众 / OTC / SIEMENS / Mahr / rexroth / Schneider Electric / RENISHAW / KEYENCE 基恩士 / 迪能机床 / 亚德客 / 大族激光 / Unitree 宇树 / 新松 / 海康机器人 / 钛虎机器人 / TSUGAMI / 凯特精机 / Linde / 德永 / Mitutoyo / KYOCERA 等" loading="lazy" />
+            <img src="assets/img/brands/brands-overview.jpg" alt="往届参展品牌：GROB / Mazak / EMAG / Panasonic / Hexagon / ZEISS / SANYO / FLUKE / KUKA / FANUC / YASKAWA / 三菱 / SMC / 一汽-大众 / OTC / SIEMENS / Mahr / rexroth / Schneider Electric / RENISHAW / KEYENCE 基恩士 / 迪能机床 / 亚德客 / 大族激光 / Unitree 宇树 / 新松 / 海康机器人 / 钛虎机器人 / TSUGAMI / 凯特精机 / Linde / 德永 / Mitutoyo / KYOCERA 等" loading="lazy" />
             <p class="brands-page-cap">仅选取部分品牌（logo），排名不分先后</p>
           </div>
         </div>
