@@ -500,7 +500,7 @@
       <div class="reason-item">
         <div class="reason-num">${esc(w.num)}</div>
         <h3>${esc(w.title)}</h3>
-        <p>${esc(w.desc)}</p>
+        <p>${esc(w.desc).replace(/\n/g, "<br>")}</p>
       </div>`).join("");
 
     const scopeHtml = (SCOPE_DETAIL || []).map(s => `
