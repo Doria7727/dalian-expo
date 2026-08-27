@@ -506,8 +506,7 @@
       const rightHtml = paragraphs.slice(mid).map(p => `<div class="reason-sub">${esc(p)}</div>`).join("");
       return `
       <div class="reason-item reason-spread">
-        <div class="reason-num">${esc(w.num)}</div>
-        <h3>${esc(w.title)}</h3>
+        <h3>${esc(w.num)}、${esc(w.title)}</h3>
         <div class="reason-body">
           <div class="reason-col">${leftHtml}</div>
           <div class="reason-col">${rightHtml}</div>
@@ -520,8 +519,7 @@
       if (idx === whyLastIdx) return renderWhyItem(w);
       return `
       <div class="reason-item">
-        <div class="reason-num">${esc(w.num)}</div>
-        <h3>${esc(w.title)}</h3>
+        <h3>${esc(w.num)}、${esc(w.title)}</h3>
         <p>${esc(w.desc).replace(/\n/g, "<br>")}</p>
       </div>`;
     }).join("");

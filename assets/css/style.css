@@ -703,22 +703,38 @@ ul { margin: 0 0 1em; padding-left: 1.2em; }
   .past-grid { grid-template-columns: 1fr 1fr; }
 }
 
-/* 展会介绍二级页（renderAbout）—— 仿参考页：大编号 + 标题 + 段落 的纯文本列表 */
-.why-grid, .scope-grid { gap: 0 48px; }
-.reason-item, .scope-item {
+/* 展会介绍二级页（renderAbout）—— 白色卡片 + 左竖条 + 序号合入标题 */
+.why-grid { gap: 24px; }
+.scope-grid { gap: 0 48px; }
+.reason-item {
+  position: relative;
+  background: #fff;
+  border: 1px solid rgba(15,42,77,.06);
+  border-radius: 12px;
+  box-shadow: 0 4px 18px rgba(15,42,77,.06);
+  padding: 26px 28px 24px 32px;
+}
+.reason-item::before {
+  content: "";
+  position: absolute;
+  left: 0; top: 22px; bottom: 22px;
+  width: 4px;
+  background: var(--c-accent);
+  border-radius: 4px 0 0 4px;
+}
+.scope-item {
   padding: 22px 0; border-bottom: 1px solid var(--c-line);
 }
-.reason-item:last-child, .scope-item:last-child { border-bottom: 0; }
-.reason-num {
-  font-size: 2rem; font-weight: 800; color: var(--c-accent); line-height: 1;
-  font-family: "Segoe UI", Arial, sans-serif; letter-spacing: .02em; margin-bottom: 8px;
-}
+.scope-item:last-child { border-bottom: 0; }
 .scope-num {
   display: inline-block; font-size: .8rem; font-weight: 700; color: #fff;
   background: var(--c-accent); padding: 3px 13px; border-radius: 20px; margin-bottom: 10px;
 }
-.reason-item h3, .scope-item h3 { margin: 0 0 8px; font-size: 1.2rem; color: var(--c-navy); font-weight: 700; }
-.reason-item p, .scope-item p { color: var(--c-ink); font-size: .95rem; line-height: 1.8; margin: 0; }
+.reason-item h3 { margin: 0 0 14px; font-size: 1.2rem; color: var(--c-navy); font-weight: 700; }
+.reason-item p {
+  color: var(--c-ink); font-size: .95rem; line-height: 1.8; margin: 0;
+}
+.reason-item > p + p { margin-top: 12px; }
 
 /* why 项最后一条：跨满双列 + 内容显式左右两栏（左右两栏由 JS 切成两半，避免浏览器自动平衡错位） */
 .reason-spread { grid-column: 1 / -1; }
