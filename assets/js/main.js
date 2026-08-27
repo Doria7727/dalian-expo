@@ -89,7 +89,6 @@
             <h4>快速导航</h4>
             ${quick}
             <a href="apply.html">参展报名</a>
-            <a href="register.html">参观预登记</a>
           </div>
           <div class="footer-col">
             <h4>参展服务</h4>
