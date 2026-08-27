@@ -6,7 +6,7 @@
 (function () {
   "use strict";
 
-  let SITE, NAV, ABOUT, EXHIBIT_SCOPE, EXHIBITORS, NEWS, SCHEDULE, TRANSPORT, HOTELS, APPLY_INFO, PAST_PHOTOS;
+  let SITE, NAV, ABOUT, EXHIBIT_SCOPE, EXHIBITORS, NEWS, SCHEDULE, TRANSPORT, HOTELS, APPLY_INFO, PAST_PHOTOS, WHY_EXHIBIT, SCOPE_DETAIL, BOOTH_PRICING;
 
   const $ = (s, ctx = document) => ctx.querySelector(s);
   const $$ = (s, ctx = document) => Array.from(ctx.querySelectorAll(s));
@@ -483,52 +483,124 @@
   }
 
   function renderAbout() {
-    const hl = ABOUT.highlights.map(h => `
-      <div class="card"><div class="ic">${h.ic}</div><h3>${esc(h.title)}</h3><p>${esc(h.desc)}</p></div>`).join("");
-    const secs = ABOUT.sections.map(s => `
-      <div class="guide-block"><h3>${esc(s.h)}</h3><p>${esc(s.p)}</p></div>`).join("");
+    const aboutStats = [
+      { num: "6万+", label: "专业采购观众" },
+      { num: "1000+", label: "国内外参展企业" },
+      { num: "6万㎡", label: "展览总面积" },
+      { num: "29届", label: "连续举办传承" }
+    ];
+    const statsHtml = aboutStats.map(s => `<div class="stat-tile"><b>${s.num}</b><span>${s.label}</span></div>`).join("");
+
+    const whyHtml = (WHY_EXHIBIT || []).map(w => `
+      <div class="card reason-card">
+        <div class="reason-num">${esc(w.num)}</div>
+        <h3>${esc(w.title)}</h3>
+        <p>${esc(w.desc)}</p>
+      </div>`).join("");
+
+    const scopeHtml = (SCOPE_DETAIL || []).map(s => `
+      <div class="card scope-card-2">
+        <span class="scope-num">${esc(s.num)}</span>
+        <h3>${esc(s.title)}</h3>
+        <p>${esc(s.desc)}</p>
+      </div>`).join("");
+
+    const bp = BOOTH_PRICING || {};
+    const std = bp.standard || {}, raw = bp.raw || {};
+    const pricingHtml = `
+      <div class="pricing-grid">
+        <div class="pricing-card">
+          <h3>${esc(std.name || "标准展位")}</h3>
+          <div class="price-line"><b>${esc(std.cn)}</b></div>
+          <div class="price-line"><b>${esc(std.usd)}</b></div>
+          <p class="price-desc">${esc(std.include)}</p>
+        </div>
+        <div class="pricing-card">
+          <h3>${esc(raw.name || "室内光地")}</h3>
+          <div class="price-line"><b>${esc(raw.cn)}</b></div>
+          <div class="price-line"><b>${esc(raw.usd)}</b></div>
+          <p class="price-desc">${esc(raw.min)} ${esc(raw.note)}</p>
+        </div>
+      </div>`;
+
+    const pastHtml = (PAST_PHOTOS || []).map(p => `
+      <div class="past-tile">
+        <img src="${esc(p.img)}" alt="${esc(p.alt || '往届大连工博会现场')}" loading="lazy" />
+      </div>`).join("");
+
+    const c = (SITE && SITE.contact) || {};
+    const contactHtml = `
+      <section class="section alt" id="contact">
+        <div class="container">
+          <div class="section-head"><span class="eyebrow">CONTACT</span><h2>参展咨询</h2><p>展位详情、参展政策、专区合作方案均可联系组委会咨询，抢抓东北市场先机</p></div>
+          <div class="contact-grid">
+            <div class="contact-info">
+              <h3>组委会联系方式</h3>
+              <div class="ci-list">
+                <div class="ci-row"><div class="ci-ic">📞</div><div class="ci-body"><span>联系人 / 电话（微信同号）</span><b>${esc(c.person || '李玥')} | ${esc(c.phone)}</b></div></div>
+                <div class="ci-row"><div class="ci-ic">✉️</div><div class="ci-body"><span>电子邮箱</span><b>${esc(c.email)}</b></div></div>
+                <div class="ci-row"><div class="ci-ic">🏢</div><div class="ci-body"><span>办公地址</span><b>${esc(c.address)}</b></div></div>
+                <div class="ci-row"><div class="ci-ic">📅</div><div class="ci-body"><span>展会时间 / 地点</span><b>${esc(SITE.dateText)} · ${esc(SITE.venue)}</b></div></div>
+              </div>
+              <div class="qr-block">
+                <img class="qr-img" src="assets/img/wechat-qr.jpg" alt="大连工博会官方微信二维码" />
+                <div class="qr-text"><p>扫码加微信<br>展会咨询 / 商务对接</p><span class="qr-tip">大连展会 · 辽宁大连</span></div>
+              </div>
+            </div>
+            <div class="contact-form-card">
+              <h3>参展咨询</h3>
+              <p class="form-lead">填写以下信息，组委会将在 24 小时内与您联系</p>
+              <a class="btn btn-primary" href="index.html#contact" style="display:block; text-align:center;">前往填写参展咨询表单 →</a>
+            </div>
+          </div>
+        </div>
+      </section>`;
+
     $("#page-content").innerHTML = `
       <section class="page-hero">
         <div class="container">
           <div class="breadcrumb"><a href="index.html">首页</a> / 展会介绍</div>
-          <h1>展会介绍</h1>
-          <p>${esc(SITE.edition)} · ${esc(SITE.name)}</p>
+          <h1>2027（第29届）大连国际工业博览会</h1>
+          <p class="page-hero-sub">展会主题：数智引领工业</p>
+          <div class="about-meta">
+            <div><span>展览时间</span><b>${esc(SITE.dateText)}</b></div>
+            <div><span>展览地点</span><b>${esc(SITE.venue)}</b></div>
+            <div><span>展览规模</span><b>${esc(SITE.heroScale || '60,000 平方米')}</b></div>
+          </div>
+          <div class="stats-strip-inner" style="margin-top:28px;">${statsHtml}</div>
         </div>
       </section>
+
       <section class="section">
         <div class="container">
-          <div class="grid grid-2" style="align-items:center; gap:40px;">
-            <div>
-              <h2>关于展会</h2>
-              <p>${esc(ABOUT.intro)}</p>
-              <p style="font-style:italic; color:var(--c-steel); border-left:3px solid var(--c-accent); padding-left:14px;">${esc(ABOUT.vision)}</p>
-            </div>
-            <div style="background:var(--c-soft); border-radius:var(--radius); padding:30px;">
-              <h3 style="margin-top:0;">展会概况</h3>
-              <ul style="margin:0;">
-                <li><b>届次：</b>${esc(SITE.edition)}</li>
-                <li><b>时间：</b>${esc(SITE.dateText)}</li>
-                <li><b>地点：</b>${esc(SITE.venue)}</li>
-                <li><b>规模：</b>${SITE.stats[0].num} 展示面积</li>
-                <li><b>主办：</b>${esc(SITE.organizer)}</li>
-                <li><b>承办：</b>${esc(SITE.coOrganizer)}</li>
-              </ul>
-            </div>
-          </div>
+          <div class="section-head"><span class="eyebrow">WHY EXHIBIT</span><h2>为什么选择大连工博会</h2><p>深耕工业领域近三十载，东北地区标杆级专业工业盛会，多重权威认证加持，为企业布局东北工业市场提供可靠平台</p></div>
+          <div class="grid grid-3">${whyHtml}</div>
         </div>
       </section>
+
       <section class="section alt">
         <div class="container">
-          <div class="section-head"><span class="eyebrow">Highlights</span><h2>展会四大价值</h2></div>
-          <div class="grid grid-4">${hl}</div>
+          <div class="section-head"><span class="eyebrow">EXHIBITION SCOPE</span><h2>展品范围</h2><p>十大主题展区，覆盖工业制造全产业链，打造东北亚工业前沿技术交流与商贸对接核心载体</p></div>
+          <div class="grid grid-2 scope-grid">${scopeHtml}</div>
         </div>
       </section>
+
       <section class="section">
-        <div class="container" style="max-width:880px;">
-          <h2 style="text-align:center; margin-bottom:24px;">深入了解</h2>
-          ${secs}
+        <div class="container">
+          <div class="section-head"><span class="eyebrow">BOOTH PRICING</span><h2>展位费用</h2><p>灵活的展位方案，满足不同规模企业的参展需求</p></div>
+          ${pricingHtml}
         </div>
-      </section>`;
+      </section>
+
+      <section class="section alt">
+        <div class="container">
+          <div class="section-head"><span class="eyebrow">PAST EDITIONS</span><h2>往届回顾</h2><p>历届大连工博会现场实况</p></div>
+          <div class="past-grid">${pastHtml}</div>
+        </div>
+      </section>
+
+      ${contactHtml}
+    `;
   }
 
   function renderExhibits() {
@@ -1015,7 +1087,7 @@
       SITE = D.SITE; NAV = D.NAV; ABOUT = D.ABOUT;
       EXHIBIT_SCOPE = D.EXHIBIT_SCOPE; EXHIBITORS = D.EXHIBITORS;
       NEWS = D.NEWS; SCHEDULE = D.SCHEDULE; TRANSPORT = D.TRANSPORT;
-      HOTELS = D.HOTELS; APPLY_INFO = D.APPLY_INFO; PAST_PHOTOS = D.PAST_PHOTOS;
+      HOTELS = D.HOTELS; APPLY_INFO = D.APPLY_INFO; PAST_PHOTOS = D.PAST_PHOTOS; WHY_EXHIBIT = D.WHY_EXHIBIT; SCOPE_DETAIL = D.SCOPE_DETAIL; BOOTH_PRICING = D.BOOTH_PRICING;
     } catch (e) {
       const box = document.getElementById("page-content");
       const msg = esc(String((e && e.message) || e));

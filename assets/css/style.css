@@ -692,6 +692,22 @@ ul { margin: 0 0 1em; padding-left: 1.2em; }
   .past-grid { grid-template-columns: 1fr 1fr; }
 }
 
+/* 展会介绍二级页（renderAbout） */
+.reason-card, .scope-card-2 { padding: 24px 24px 26px; }
+.reason-num { font-size: 1.7rem; font-weight: 800; color: var(--c-accent); line-height: 1; margin-bottom: 10px; }
+.scope-num { display: inline-block; font-size: .78rem; font-weight: 700; color: #fff; background: var(--c-accent); padding: 2px 11px; border-radius: 20px; margin-bottom: 12px; }
+.pricing-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; }
+.pricing-card { background: var(--c-soft); border: 1px solid rgba(15,42,77,.08); border-radius: var(--radius); padding: 30px; }
+.pricing-card h3 { margin: 0 0 14px; color: var(--c-navy); font-size: 1.25rem; }
+.price-line { font-size: 1.1rem; margin: 7px 0; color: var(--c-navy); }
+.price-desc { color: var(--c-steel); font-size: .92rem; margin-top: 14px; line-height: 1.75; }
+.about-meta { display: flex; gap: 42px; flex-wrap: wrap; margin-top: 16px; }
+.about-meta div { display: flex; flex-direction: column; }
+.about-meta span { font-size: .8rem; color: var(--c-steel); letter-spacing: .03em; }
+.about-meta b { font-size: 1.05rem; color: var(--c-navy); margin-top: 2px; font-weight: 700; }
+.page-hero-sub { font-size: 1.15rem; color: var(--c-accent); font-weight: 600; margin: 8px 0 0; }
+.scope-grid { gap: 18px; }
+
 /* 回到顶部 */
 .to-top {
   position: fixed; right: 20px; bottom: 20px; width: 46px; height: 46px; border-radius: 50%;
