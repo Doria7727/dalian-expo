@@ -62,6 +62,11 @@
       "page": "pricing"
     },
     {
+      "label": "参展品牌",
+      "href": "brands.html",
+      "page": "brands"
+    },
+    {
       "label": "往届回顾",
       "href": "#past",
       "page": "past"

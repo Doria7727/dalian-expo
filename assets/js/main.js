@@ -93,7 +93,7 @@
           </div>
           <div class="footer-col">
             <h4>参展服务</h4>
-            <a href="index.html#brands">参展品牌</a>
+            <a href="brands.html">参展品牌</a>
             <a href="schedule.html">日程安排</a>
             <a href="travel.html">交通与酒店</a>
             <a href="news.html">新闻动态</a>
@@ -263,21 +263,6 @@
               <a class="btn btn-primary" href="apply.html">立即申请展位 →</a>
             </div>
           </div>
-        </div>
-      </section>
-
-      <!-- 参展品牌 -->
-      <section class="block block-alt" id="brands">
-        <div class="container">
-          <div class="section-head">
-            <span class="eyebrow">PARTICIPATING BRANDS</span>
-            <h2><a href="brands.html">参展品牌 →</a></h2>
-            <p>汇聚全球工业领军企业，往届部分参展品牌一览（仅供参考，排名不分先后）</p>
-          </div>
-          <a class="brands-board" href="brands.html" aria-label="查看完整参展品牌">
-            <img src="assets/img/brands/brands-overview.png" alt="往届参展品牌：GROB / Mazak / EMAG / Panasonic / Hexagon / ZEISS / SANYO / FLUKE / KUKA / FANUC / YASKAWA / 三菱 / SMC / 一汽-大众 / OTC / SIEMENS / Mahr / rexroth / Schneider Electric / RENISHAW / KEYENCE 基恩士 / 迪能机床 / 亚德客 / 大族激光 / Unitree 宇树 / 新松 / 海康机器人 / 钛虎机器人 / TSUGAMI / 凯特精机 / Linde / 德永 / Mitutoyo / KYOCERA 等" loading="lazy" />
-            <span class="brands-cap">仅选取部分品牌（logo），排名不分先后 · 点击查看完整列表 →</span>
-          </a>
         </div>
       </section>
 
