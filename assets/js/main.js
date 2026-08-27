@@ -169,12 +169,29 @@
       <section class="hero-split" id="home">
         <div class="container hero-split-inner">
           <div class="hero-text">
-            <span class="eyebrow eyebrow-light">${esc(SITE.edition)} · ${esc(SITE.year)}</span>
-            <h1>${esc(SITE.theme)}<br><span class="hero-title">${esc(SITE.name)}</span></h1>
-            <p class="hero-sub">深耕工业领域近三十载，东北地区标杆级专业工业盛会。2027 年 5 月，相约大连自贸区国际会展中心，共启数智工业新未来。</p>
+            <span class="eyebrow eyebrow-light hero-eyebrow"><i class="hero-dot"></i>${esc(SITE.edition)} · 火热招商中</span>
+            <h1 class="hero-h1">
+              <span class="hero-title-main">2027大连国际</span>
+              <span class="hero-title-accent">工业博览会</span>
+            </h1>
+            <p class="hero-theme">展会主题：${esc(SITE.theme)}</p>
+            <div class="hero-info">
+              <div class="hero-info-item">
+                <span class="hero-info-label">展览时间</span>
+                <span class="hero-info-value">${esc(SITE.dateText || '2027年5月12日—15日')}</span>
+              </div>
+              <div class="hero-info-item">
+                <span class="hero-info-label">展览地点</span>
+                <span class="hero-info-value">${esc(SITE.venue || '大连自贸区国际会展中心')}</span>
+              </div>
+              <div class="hero-info-item">
+                <span class="hero-info-label">展览规模</span>
+                <span class="hero-info-value">${esc(SITE.heroScale || '60,000 平方米')}</span>
+              </div>
+            </div>
             <div class="hero-actions">
-              <a class="btn btn-primary" href="${navHref('#contact')}">立即参展咨询 →</a>
-              <a class="btn btn-light" href="${navHref('#about')}">了解展会</a>
+              <a class="btn btn-primary" href="${navHref('#contact')}">申请参展 →</a>
+              <a class="btn btn-outline" href="${navHref('#about')}">了解更多</a>
             </div>
           </div>
           <div class="hero-visual">

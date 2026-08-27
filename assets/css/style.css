@@ -160,6 +160,71 @@ ul { margin: 0 0 1em; padding-left: 1.2em; }
   display: block; font-size: 1.5rem; font-weight: 600; color: #ffd9c2;
   margin-top: 8px; letter-spacing: .02em;
 }
+
+
+/* =========================================================
+   首页 Hero 新版排版（按 2026-08-27 截图样张）
+   ========================================================= */
+.hero-text .hero-eyebrow {
+  display: inline-flex; align-items: center; gap: 8px;
+  border-color: rgba(232,84,30,.45);
+  background: rgba(232,84,30,.10);
+  color: #ffb38a;
+}
+.hero-text .hero-eyebrow .hero-dot {
+  display: inline-block; width: 8px; height: 8px; border-radius: 50%;
+  background: var(--c-accent);
+  box-shadow: 0 0 0 4px rgba(232,84,30,.18);
+  animation: heroDotPulse 1.6s ease-in-out infinite;
+}
+@keyframes heroDotPulse {
+  0%, 100% { box-shadow: 0 0 0 4px rgba(232,84,30,.18); }
+  50%      { box-shadow: 0 0 0 7px rgba(232,84,30,.05); }
+}
+.hero-text .hero-h1 {
+  margin: 0 0 12px; font-weight: 800; line-height: 1.05;
+}
+.hero-text .hero-title-main {
+  display: block; font-size: 2.7rem; color: #ffffff; letter-spacing: .01em;
+  text-shadow: 0 2px 12px rgba(10,31,61,.35);
+}
+.hero-text .hero-title-accent {
+  display: block; font-size: 3.5rem;
+  color: var(--c-accent);
+  margin-top: 6px; font-weight: 900; letter-spacing: .04em;
+  text-shadow: 0 2px 16px rgba(232,84,30,.32);
+  background: linear-gradient(90deg, var(--c-accent) 0%, var(--c-accent-2) 100%);
+  -webkit-background-clip: text; background-clip: text;
+}
+.hero-text .hero-theme {
+  font-size: 1.05rem; color: #d5e3f3; margin: 18px 0 26px;
+  font-weight: 500; letter-spacing: .02em;
+}
+.hero-info {
+  display: grid; grid-template-columns: repeat(3, auto);
+  gap: 38px; margin: 0 0 32px; align-items: start;
+}
+.hero-info-item { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.hero-info-label {
+  font-size: .82rem; color: #8ea7c0; letter-spacing: .04em; font-weight: 500;
+}
+.hero-info-value {
+  font-size: 1.05rem; color: #ffffff; font-weight: 700;
+  letter-spacing: .01em; white-space: nowrap;
+}
+
+@media (max-width: 900px) {
+  .hero-text .hero-title-main { font-size: 2.1rem; }
+  .hero-text .hero-title-accent { font-size: 2.8rem; }
+  .hero-info { grid-template-columns: repeat(3, 1fr); gap: 14px; }
+  .hero-info-value { font-size: .92rem; white-space: normal; }
+}
+@media (max-width: 600px) {
+  .hero-info { grid-template-columns: 1fr; gap: 14px; }
+  .hero-text .hero-title-main { font-size: 1.8rem; }
+  .hero-text .hero-title-accent { font-size: 2.4rem; }
+}
+
 .hero-text .hero-sub {
   font-size: 1.05rem; color: #cfe0f0; margin: 14px 0 24px; max-width: 520px; line-height: 1.7;
 }
