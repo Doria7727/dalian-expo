@@ -848,7 +848,7 @@
         </div>
       </section>`;
     const form = $("#regForm");
-    form.addEventListener("submit", (e) => {
+    form.addEventListener("submit", async (e) => {
       e.preventDefault();
       let ok = true;
       const setErr = (name, msg) => {
@@ -1037,7 +1037,7 @@
                   <div class="field full"><label>备注 / 特殊需求</label><textarea name="remark" rows="3" placeholder="可填写期望展位位置、搭建需求等"></textarea></div>
                 </div>
                 <button type="submit" class="btn btn-primary" style="margin-top:18px; width:100%; justify-content:center;">提交参展报名</button>
-                <p class="form-note">提交即表示同意主办方与您联系对接参展事宜。本示例表单在前端校验后本地保存。</p>
+                <p class="form-note">提交后，报名信息将发送到组委会邮箱 1060200619@qq.com，主办方 1 个工作日内与您联系。提交即表示同意主办方与您联系对接参展事宜。</p>
                 <div class="form-success hidden" id="applyOk"></div>
               </form>
             </div>
@@ -1062,7 +1062,7 @@
     };
     typeSel.addEventListener("change", syncBooth);
     syncBooth();
-    form.addEventListener("submit", (e) => {
+    form.addEventListener("submit", async (e) => {
       e.preventDefault();
       let ok = true;
       const setErr = (name, msg) => {
@@ -1083,9 +1083,63 @@
       if (!data.products) setErr("products", "请填写主营产品/展品类别");
       if (data.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) setErr("email", "邮箱格式不正确");
       if (!ok) return;
+
+      // 本地缓存一份（防止网络异常丢数据，本机也可回看）
       try { localStorage.setItem("diie_apply_" + Date.now(), JSON.stringify(data)); } catch (_) {}
+
+      const submitBtn = form.querySelector('button[type="submit"]');
       const okBox = $("#applyOk");
-      okBox.textContent = `✅ 报名提交成功！${esc(data.company)}，${esc(data.contact)}，组委会将尽快与您联系对接展位事宜。`;
+      if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = "正在提交..."; }
+
+      // ---- 主通道：FormSubmit.co AJAX，发到 1060200619@qq.com ----
+      // 首次提交需主轮机人在收件箱点 "Activate Form" 邮件完成激活。
+      let delivered = false;
+      try {
+        const payload = {
+          _subject: "【大连工博会·参展报名】" + (data.company || "") + " · " + (data.contact || ""),
+          _template: "table",
+          _captcha: "false",
+          "企业名称": data.company || "",
+          "联系人": data.contact || "",
+          "手机号": data.phone || "",
+          "职务": data.title || "",
+          "邮箱": data.email || "",
+          "意向参展展区": data.zone || "",
+          "展位类型": data.boothType || "",
+          "标准展位数量（个）": data.boothStd || "",
+          "光地面积（㎡）": data.boothRaw || "",
+          "主营产品/展品类别": data.products || "",
+          "备注/特殊需求": data.remark || "",
+          "提交时间": new Date().toLocaleString("zh-CN")
+        };
+        const r = await fetch("https://formsubmit.co/ajax/1060200619@qq.com", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", Accept: "application/json" },
+          body: JSON.stringify(payload)
+        });
+        delivered = r.ok;
+      } catch (_) { delivered = false; }
+
+      if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = "提交参展报名"; }
+
+      if (delivered) {
+        okBox.innerHTML = `✅ 已收到！报名表已发送到组委会邮箱 <b>1060200619@qq.com</b>，<b>${esc(data.company)}</b>（${esc(data.contact)}）将在 <b>1 个工作日内</b>与您联系对接展位事宜。`;
+      } else {
+        // 兑底：调起邮件客户端（关键信息精简），同时提示直打电话
+        const subject = encodeURIComponent("【大连工博会·参展报名】" + (data.company || "") + " · " + (data.contact || ""));
+        const body = encodeURIComponent(
+          "企业名称：" + (data.company || "") + "\n" +
+          "联系人：" + (data.contact || "") + "\n" +
+          "手机号：" + (data.phone || "") + "\n" +
+          "意向展区：" + (data.zone || "") + "\n" +
+          "展位类型：" + (data.boothType || "") + "\n" +
+          (data.boothType === "标准展位" ? "标准展位数量：" + (data.boothStd || "") + "\n" : "") +
+          (data.boothType === "室内光地" ? "光地面积：" + (data.boothRaw || "") + "㎡\n" : "") +
+          "主营产品：" + (data.products || "") + "\n" +
+          "备注：" + (data.remark || "") + "\n"
+        );
+        okBox.innerHTML = `⚠️ 提交未发送出去。请拨打组委会电话 <a href="tel:18624268832"><b>18624268832</b></a>（李玥），或点此处直接发邮件：<a href="mailto:1060200619@qq.com?subject=${subject}&body=${body}">1060200619@qq.com</a>。`;
+      }
       okBox.classList.remove("hidden");
       form.reset();
       syncBooth();
