@@ -358,10 +358,11 @@
       </section>
     `;
 
-    // 首页联系表单提交：通过 FormSubmit.co 把数据同步到 1060200619@qq.com
-    // 本地缓存 + 可选调起邮件兜底；用户在自己邮箱即可看到全部咨询。
-    const form = $("#homeContactForm");
-    if (form) {
+    // 通用：把联系/咨询表单挂到 FormSubmit.co，发到 1060200619@qq.com
+    // 同时本地缓存 + 邮件兜底；首页联系区和关于页联系区共用此逻辑
+    function wireInquiryForm(form) {
+      if (!form) return;
+      const ok = form.querySelector(".form-success");
       form.addEventListener("submit", async (e) => {
         e.preventDefault();
         const data = Object.fromEntries(new FormData(form).entries());
@@ -370,7 +371,6 @@
           return;
         }
         const submitBtn = form.querySelector(".cf-submit");
-        const ok = $("#homeContactOk");
         const submitText = submitBtn ? submitBtn.textContent : "";
         if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = "正在提交..."; }
 
@@ -390,6 +390,7 @@
             "邮箱": data.email || "",
             "意向展区": data.zone || "",
             "咨询内容": data.message || "",
+            "提交页面": location.pathname,
             "提交时间": new Date().toLocaleString("zh-CN")
           };
           const r = await fetch("https://formsubmit.co/ajax/1060200619@qq.com", {
@@ -414,6 +415,7 @@
             "邮箱：" + (data.email || "") + "\n" +
             "意向展区：" + (data.zone || "") + "\n" +
             "咨询内容：" + (data.message || "") + "\n" +
+            "提交页面：" + location.pathname + "\n" +
             "提交时间：" + new Date().toLocaleString("zh-CN")
           );
           ok.innerHTML = `⚠️ 自动发送未完成（可能需在邮箱中点击激活链接）。<br>` +
@@ -426,6 +428,7 @@
         if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = submitText; }
       });
     }
+    wireInquiryForm($("#homeContactForm"));
 
     // 首页 Hero 轮播驱动
     (function bootHeroSlideshow(){
@@ -549,7 +552,27 @@
             <div class="contact-form-card">
               <h3>参展咨询</h3>
               <p class="form-lead">填写以下信息，组委会将在 24 小时内与您联系</p>
-              <a class="btn btn-primary" href="index.html#contact" style="display:block; text-align:center;">前往填写参展咨询表单 →</a>
+              <form id="aboutContactForm" novalidate>
+                <div class="cf-row">
+                  <div class="cf-field"><label>公司名称 <span class="req">*</span></label><input name="company" required placeholder="请输入公司名称"></div>
+                  <div class="cf-field"><label>联系人 <span class="req">*</span></label><input name="contact" required placeholder="您的姓名"></div>
+                </div>
+                <div class="cf-row">
+                  <div class="cf-field"><label>联系电话 <span class="req">*</span></label><input name="phone" required placeholder="11 位手机号"></div>
+                  <div class="cf-field"><label>邮箱</label><input name="email" type="email" placeholder="可选"></div>
+                </div>
+                <div class="cf-field"><label>意向展区</label>
+                  <select name="zone">
+                    <option value="">请选择（可选）</option>
+                    ${EXHIBIT_SCOPE.map(g => `<option value="${esc(g.group)}">${esc(g.group)}</option>`).join("")}
+                  </select>
+                </div>
+                <div class="cf-field"><label>咨询内容</label>
+                  <textarea name="message" rows="3" placeholder="展位类型 / 面积 / 特殊需求 等"></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary cf-submit">提交咨询</button>
+                <div class="form-success hidden" id="aboutContactOk"></div>
+              </form>
             </div>
           </div>
         </div>
@@ -600,6 +623,7 @@
 
       ${contactHtml}
     `;
+    wireInquiryForm($("#aboutContactForm"));
   }
 
   function renderExhibits() {
