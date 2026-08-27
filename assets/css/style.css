@@ -631,3 +631,75 @@ ul { margin: 0 0 1em; padding-left: 1.2em; }
   box-shadow: var(--shadow-md); opacity: 0; pointer-events: none; transition: opacity .3s; z-index: 90;
 }
 .to-top.show { opacity: 1; pointer-events: auto; }
+
+
+/* =========================================================
+   首页 Hero 往届照片轮播（替换原 SVG 占位）
+   ========================================================= */
+.hero-slideshow {
+  position: relative; width: 100%; aspect-ratio: 4/3;
+  border-radius: 16px; overflow: hidden;
+  background: linear-gradient(135deg, rgba(255,255,255,.05), rgba(255,255,255,.02));
+  border: 1px solid rgba(255,255,255,.12);
+  backdrop-filter: blur(2px);
+}
+.hero-slides { position: absolute; inset: 0; }
+.hero-slide {
+  position: absolute; inset: 0;
+  opacity: 0; transition: opacity .9s ease;
+  background: linear-gradient(180deg, transparent 60%, rgba(10,31,61,.55) 100%);
+}
+.hero-slide.active { opacity: 1; z-index: 2; }
+.hero-slide img {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  object-fit: cover; display: block;
+}
+.hero-slide-nav {
+  position: absolute; left: 50%; bottom: 14px; transform: translateX(-50%);
+  display: flex; align-items: center; gap: 14px;
+  background: rgba(10,31,61,.55); backdrop-filter: blur(6px);
+  padding: 6px 12px; border-radius: 999px;
+  z-index: 5; opacity: 0; transition: opacity .25s;
+}
+.hero-slideshow:hover .hero-slide-nav,
+.hero-slideshow:focus-within .hero-slide-nav { opacity: 1; }
+.hero-slide-arrow {
+  background: rgba(255,255,255,.15); color: #fff; border: 0;
+  width: 26px; height: 26px; border-radius: 50%; cursor: pointer;
+  font-size: 1.1rem; line-height: 1; font-family: inherit;
+  display: grid; place-items: center; transition: background .2s;
+}
+.hero-slide-arrow:hover { background: var(--c-orange); }
+.hero-slide-dots { display: flex; gap: 6px; align-items: center; }
+.hero-slide-dot {
+  width: 18px; height: 4px; border-radius: 2px;
+  background: rgba(255,255,255,.35); border: 0; cursor: pointer; padding: 0;
+  transition: all .25s;
+}
+.hero-slide-dot.active { background: var(--c-orange); width: 28px; }
+.hero-slide-counter {
+  position: absolute; top: 12px; right: 12px;
+  background: rgba(10,31,61,.6); color: #fff;
+  padding: 4px 10px; border-radius: 999px; font-size: .78rem; font-weight: 600;
+  z-index: 5; backdrop-filter: blur(4px);
+}
+
+/* 联系区微信二维码（高清版） */
+.qr-block {
+  display: flex; gap: 16px; align-items: center;
+  margin-top: 20px; padding: 18px; background: var(--c-soft); border-radius: 12px;
+}
+.qr-img {
+  flex: none; width: 132px; height: 132px; background: #fff;
+  border: 1px solid var(--c-line); border-radius: 8px; padding: 6px;
+  object-fit: contain; display: block;
+}
+.qr-text { display: flex; flex-direction: column; gap: 6px; }
+.qr-text p { margin: 0; font-size: .9rem; color: var(--c-text); line-height: 1.5; font-weight: 600; }
+.qr-tip { font-size: .78rem; color: var(--c-muted); }
+
+/* 表单成功提示样式增强 */
+.form-success a.form-mailto {
+  display: inline-block; margin-top: 8px;
+  color: var(--c-orange); text-decoration: underline; word-break: break-all;
+}

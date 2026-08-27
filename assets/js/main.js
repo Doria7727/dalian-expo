@@ -150,12 +150,19 @@
         </div>`;
     }).join("");
 
-    // 往届回顾照片墙（用 data.json 的 PAST_PHOTOS 真实照片）
+    // 往届回顾照片墙（用 data.json 的 PAST_PHOTOS 真实照片，标签已移除）
     const pastPhotos = (PAST_PHOTOS || []).map(p => `
       <div class="past-tile">
         <img src="${esc(p.img)}" alt="${esc(p.alt || '往届大连工博会现场')}" loading="lazy" />
-        <span class="past-label">${esc(p.label || '往届')}</span>
       </div>`).join("");
+
+    // 首页 Hero 右侧：往届照片轮播（与 #past 区块共享 PAST_PHOTOS 数据源）
+    const heroSlides = (PAST_PHOTOS || []).slice(0, 8).map((p, i) => `
+      <div class="hero-slide${i === 0 ? ' active' : ''}">
+        <img src="${esc(p.img)}" alt="${esc(p.alt || '往届大连工博会现场')}" loading="${i === 0 ? 'eager' : 'lazy'}" />
+      </div>`).join("");
+    const heroDots = (PAST_PHOTOS || []).slice(0, 8).map((p, i) => `
+      <button class="hero-slide-dot${i === 0 ? ' active' : ''}" data-idx="${i}" aria-label="第 ${i+1} 张"></button>`).join("");
 
     $("#page-content").innerHTML = `
       <!-- HERO（左右分屏） -->
@@ -171,19 +178,14 @@
             </div>
           </div>
           <div class="hero-visual">
-            <div class="hero-img-placeholder">
-              <div class="hero-img-glow"></div>
-              <svg viewBox="0 0 400 300" fill="none" stroke="rgba(255,255,255,.35)" stroke-width="1.5">
-                <!-- 工厂轮廓占位 -->
-                <rect x="40" y="140" width="80" height="120"/>
-                <rect x="140" y="100" width="80" height="160"/>
-                <rect x="240" y="160" width="80" height="100"/>
-                <path d="M340 120 L340 260 L380 260 L380 160 L360 140 L340 120 Z"/>
-                <circle cx="80" cy="170" r="14" fill="rgba(232,84,30,.4)"/>
-                <circle cx="180" cy="140" r="14" fill="rgba(232,84,30,.4)"/>
-                <line x1="20" y1="260" x2="380" y2="260" stroke-width="2"/>
-                <text x="200" y="290" text-anchor="middle" fill="rgba(255,255,255,.5)" font-size="14" font-family="sans-serif">[ 展会现场照片 · 待替换 ]</text>
-              </svg>
+            <div class="hero-slideshow" id="heroSlideshow">
+              <div class="hero-slides">${heroSlides}</div>
+              <div class="hero-slide-nav">
+                <button class="hero-slide-arrow" data-dir="-1" aria-label="上一张">‹</button>
+                <div class="hero-slide-dots">${heroDots}</div>
+                <button class="hero-slide-arrow" data-dir="1" aria-label="下一张">›</button>
+              </div>
+              <div class="hero-slide-counter"><span id="heroSlideCur">1</span> / ${(PAST_PHOTOS || []).slice(0, 8).length}</div>
             </div>
           </div>
         </div>
@@ -308,10 +310,11 @@
                 </div>
               </div>
               <div class="qr-block">
-                <div class="qr-placeholder">
-                  <svg viewBox="0 0 60 60" fill="#1a2238"><rect x="0" y="0" width="20" height="20"/><rect x="40" y="0" width="20" height="20"/><rect x="0" y="40" width="20" height="20"/><rect x="6" y="6" width="8" height="8" fill="#fff"/><rect x="46" y="6" width="8" height="8" fill="#fff"/><rect x="6" y="46" width="8" height="8" fill="#fff"/><rect x="24" y="4" width="4" height="4"/><rect x="32" y="8" width="4" height="4"/><rect x="28" y="20" width="4" height="4"/><rect x="24" y="28" width="4" height="4"/><rect x="32" y="32" width="4" height="4"/><rect x="40" y="28" width="4" height="4"/><rect x="44" y="40" width="4" height="4"/><rect x="52" y="44" width="4" height="4"/><rect x="24" y="48" width="4" height="4"/><rect x="36" y="52" width="4" height="4"/></svg>
+                <img class="qr-img" src="assets/img/wechat-qr.jpg" alt="大连工博会官方微信二维码" />
+                <div class="qr-text">
+                  <p>扫码加微信<br>展会咨询 / 商务对接</p>
+                  <span class="qr-tip">大连展会 · 辽宁大连</span>
                 </div>
-                <p>扫码加微信<br>展会咨询 / 商务对接</p>
               </div>
             </div>
             <!-- 右：参展咨询表单 -->
@@ -345,23 +348,109 @@
       </section>
     `;
 
-    // 首页联系表单提交（前端校验 + 本地保存示例）
+    // 首页联系表单提交：通过 FormSubmit.co 把数据同步到 1060200619@qq.com
+    // 本地缓存 + 可选调起邮件兜底；用户在自己邮箱即可看到全部咨询。
     const form = $("#homeContactForm");
     if (form) {
-      form.addEventListener("submit", (e) => {
+      form.addEventListener("submit", async (e) => {
         e.preventDefault();
         const data = Object.fromEntries(new FormData(form).entries());
         if (!data.company || !data.contact || !/^1[0-9]{10}$/.test(data.phone||"")) {
           alert("请填写公司名称、联系人，并确保手机号格式正确");
           return;
         }
-        try { localStorage.setItem("diie_inquiry_" + Date.now(), JSON.stringify(data)); } catch(_) {}
+        const submitBtn = form.querySelector(".cf-submit");
         const ok = $("#homeContactOk");
-        ok.textContent = `✅ 提交成功！我们将在 24 小时内与 ${data.contact} 联系。`;
-        ok.classList.remove("hidden");
-        form.reset();
+        const submitText = submitBtn ? submitBtn.textContent : "";
+        if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = "正在提交..."; }
+
+        // 本地缓存一份（防止网络异常丢数据，浏览此设备的组委会也能看到）
+        try { localStorage.setItem("diie_inquiry_" + Date.now(), JSON.stringify(data)); } catch(_) {}
+
+        // ---- 主通道：FormSubmit.co AJAX（首次需点击激活邮件） ----
+        let delivered = false;
+        try {
+          const payload = {
+            _subject: "【大连工博会参展咨询】" + (data.company || "") + " · " + (data.contact || ""),
+            _template: "table",
+            _captcha: "false",
+            "公司名称": data.company || "",
+            "联系人": data.contact || "",
+            "联系电话": data.phone || "",
+            "邮箱": data.email || "",
+            "意向展区": data.zone || "",
+            "咨询内容": data.message || "",
+            "提交时间": new Date().toLocaleString("zh-CN")
+          };
+          const r = await fetch("https://formsubmit.co/ajax/1060200619@qq.com", {
+            method: "POST",
+            headers: { "Content-Type": "application/json", Accept: "application/json" },
+            body: JSON.stringify(payload)
+          });
+          delivered = r.ok;
+        } catch (_) { delivered = false; }
+
+        if (delivered) {
+          ok.innerHTML = `✅ 提交成功！组委会将在 24 小时内联系 <b>${esc(data.contact)}</b>，邮件将发至 1060200619@qq.com。`;
+          ok.classList.remove("hidden");
+          form.reset();
+        } else {
+          // ---- 兜底：调起用户邮件客户端（需电脑配置默认邮件） ----
+          const subject = encodeURIComponent("【大连工博会参展咨询】" + (data.company || "") + " · " + (data.contact || ""));
+          const body = encodeURIComponent(
+            "公司名称：" + (data.company || "") + "\n" +
+            "联系人：" + (data.contact || "") + "\n" +
+            "联系电话：" + (data.phone || "") + "\n" +
+            "邮箱：" + (data.email || "") + "\n" +
+            "意向展区：" + (data.zone || "") + "\n" +
+            "咨询内容：" + (data.message || "") + "\n" +
+            "提交时间：" + new Date().toLocaleString("zh-CN")
+          );
+          ok.innerHTML = `⚠️ 自动发送未完成（可能需在邮箱中点击激活链接）。<br>` +
+                         `已为您打开邮件，发送至 <b>1060200619@qq.com</b> 后即可完成提交。<br>` +
+                         `<a class="form-mailto" href="mailto:1060200619@qq.com?subject=${subject}&body=${body}">点此手动发送邮件</a>`;
+          ok.classList.remove("hidden");
+          // 自动调起
+          window.location.href = `mailto:1060200619@qq.com?subject=${subject}&body=${body}`;
+        }
+        if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = submitText; }
       });
     }
+
+    // 首页 Hero 轮播驱动
+    (function bootHeroSlideshow(){
+      const root = document.getElementById("heroSlideshow");
+      if (!root) return;
+      const slides = root.querySelectorAll(".hero-slide");
+      const dots = root.querySelectorAll(".hero-slide-dot");
+      const counter = document.getElementById("heroSlideCur");
+      if (!slides.length) return;
+      const total = slides.length;
+      let i = 0, timer = null;
+      function go(n){
+        slides[i].classList.remove("active");
+        if (dots[i]) dots[i].classList.remove("active");
+        i = (n + total) % total;
+        slides[i].classList.add("active");
+        if (dots[i]) dots[i].classList.add("active");
+        if (counter) counter.textContent = String(i + 1);
+      }
+      function next(){ go(i + 1); }
+      function start(){ if (timer) clearInterval(timer); timer = setInterval(next, 5000); }
+      function stop(){ if (timer) { clearInterval(timer); timer = null; } }
+      start();
+      dots.forEach((d, idx) => d.addEventListener("click", () => { go(idx); stop(); start(); }));
+      root.querySelectorAll(".hero-slide-arrow").forEach(a => {
+        a.addEventListener("click", () => {
+          const dir = parseInt(a.dataset.dir || "1", 10);
+          go(i + dir);
+          stop(); start();
+        });
+      });
+      root.addEventListener("mouseenter", stop);
+      root.addEventListener("mouseleave", start);
+      root.addEventListener("touchstart", stop, {passive:true});
+    })();
   }
 
   /* =========================================================
