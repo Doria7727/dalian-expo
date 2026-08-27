@@ -492,14 +492,14 @@
     const statsHtml = aboutStats.map(s => `<div class="stat-tile"><b>${s.num}</b><span>${s.label}</span></div>`).join("");
 
     const whyHtml = (WHY_EXHIBIT || []).map(w => `
-      <div class="card reason-card">
+      <div class="reason-item">
         <div class="reason-num">${esc(w.num)}</div>
         <h3>${esc(w.title)}</h3>
         <p>${esc(w.desc)}</p>
       </div>`).join("");
 
     const scopeHtml = (SCOPE_DETAIL || []).map(s => `
-      <div class="card scope-card-2">
+      <div class="scope-item">
         <span class="scope-num">${esc(s.num)}</span>
         <h3>${esc(s.title)}</h3>
         <p>${esc(s.desc)}</p>
@@ -574,7 +574,7 @@
       <section class="section">
         <div class="container">
           <div class="section-head"><span class="eyebrow">WHY EXHIBIT</span><h2>为什么选择大连工博会</h2><p>深耕工业领域近三十载，东北地区标杆级专业工业盛会，多重权威认证加持，为企业布局东北工业市场提供可靠平台</p></div>
-          <div class="grid grid-3">${whyHtml}</div>
+          <div class="grid grid-2 why-grid">${whyHtml}</div>
         </div>
       </section>
 
