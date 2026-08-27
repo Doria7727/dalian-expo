@@ -1004,7 +1004,7 @@
         <h3 style="margin-top:0; font-size:1rem;">Q：${esc(f.q)}</h3>
         <p style="margin:0;">${esc(f.a)}</p>
       </div>`).join("");
-    const zones = EXHIBIT_SCOPE.map(g => `<option value="${esc(g.group)}">${esc(g.group)}</option>`).join("");
+    // 注：fix43 已下掉「意向参展展区」字段，无需渲染展区选项
     $("#page-content").innerHTML = `
       <section class="page-hero">
         <div class="container">
@@ -1025,11 +1025,6 @@
                   <div class="field"><label>手机号 <span class="req">*</span></label><input name="phone" required pattern="1[0-9]{10}"><div class="err" data-for="phone"></div></div>
                   <div class="field"><label>职务</label><input name="title" placeholder="如 市场总监"></div>
                   <div class="field"><label>邮箱</label><input name="email" type="email"><div class="err" data-for="email"></div></div>
-                  <div class="field full"><label>意向参展展区 <span class="req">*</span></label>
-                    <select name="zone" required>
-                      <option value="">请选择展区</option>
-                      ${zones}
-                    </select><div class="err" data-for="zone"></div></div>
                   <div class="field"><label>展位类型 <span class="req">*</span></label>
                     <select name="boothType" required>
                       <option value="">请选择</option>
@@ -1116,7 +1111,6 @@
           "手机号": data.phone || "",
           "职务": data.title || "",
           "邮箱": data.email || "",
-          "意向参展展区": data.zone || "",
           "展位类型": data.boothType || "",
           "标准展位数量（个）": data.boothStd || "",
           "光地面积（㎡）": data.boothRaw || "",
