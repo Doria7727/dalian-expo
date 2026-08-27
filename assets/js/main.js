@@ -113,6 +113,79 @@
   }
 
   /* =========================================================
+     通用：把联系/咨询表单挂到 FormSubmit.co，发到 1060200619@qq.com
+     同时本地缓存 + 邮件兜底；首页联系区和关于页联系区共用此逻辑
+     ========================================================= */
+  function wireInquiryForm(form) {
+    if (!form) return;
+    const ok = form.querySelector(".form-success");
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const data = Object.fromEntries(new FormData(form).entries());
+      if (!data.company || !data.contact || !/^1[0-9]{10}$/.test(data.phone||"")) {
+        alert("请填写公司名称、联系人，并确保手机号格式正确");
+        return;
+      }
+      const submitBtn = form.querySelector(".cf-submit");
+      const submitText = submitBtn ? submitBtn.textContent : "";
+      if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = "正在提交..."; }
+
+      // 本地缓存一份（防止网络异常丢数据，浏览此设备的组委会也能看到）
+      try { localStorage.setItem("diie_inquiry_" + Date.now(), JSON.stringify(data)); } catch(_) {}
+
+      // ---- 主通道：FormSubmit.co AJAX（首次需点击激活邮件） ----
+      let delivered = false;
+      try {
+        const payload = {
+          _subject: "【大连工博会参展咨询】" + (data.company || "") + " · " + (data.contact || ""),
+          _template: "table",
+          _captcha: "false",
+          "公司名称": data.company || "",
+          "联系人": data.contact || "",
+          "联系电话": data.phone || "",
+          "邮箱": data.email || "",
+          "意向展区": data.zone || "",
+          "咨询内容": data.message || "",
+          "提交页面": location.pathname,
+          "提交时间": new Date().toLocaleString("zh-CN")
+        };
+        const r = await fetch("https://formsubmit.co/ajax/1060200619@qq.com", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", Accept: "application/json" },
+          body: JSON.stringify(payload)
+        });
+        delivered = r.ok;
+      } catch (_) { delivered = false; }
+
+      if (delivered) {
+        ok.innerHTML = `✅ 提交成功！组委会将在 24 小时内联系 <b>${esc(data.contact)}</b>，邮件将发至 1060200619@qq.com。`;
+        ok.classList.remove("hidden");
+        form.reset();
+      } else {
+        // ---- 兜底：调起用户邮件客户端（需电脑配置默认邮件） ----
+        const subject = encodeURIComponent("【大连工博会参展咨询】" + (data.company || "") + " · " + (data.contact || ""));
+        const body = encodeURIComponent(
+          "公司名称：" + (data.company || "") + "\n" +
+          "联系人：" + (data.contact || "") + "\n" +
+          "联系电话：" + (data.phone || "") + "\n" +
+          "邮箱：" + (data.email || "") + "\n" +
+          "意向展区：" + (data.zone || "") + "\n" +
+          "咨询内容：" + (data.message || "") + "\n" +
+          "提交页面：" + location.pathname + "\n" +
+          "提交时间：" + new Date().toLocaleString("zh-CN")
+        );
+        ok.innerHTML = `⚠️ 自动发送未完成（可能需在邮箱中点击激活链接）。<br>` +
+                       `已为您打开邮件，发送至 <b>1060200619@qq.com</b> 后即可完成提交。<br>` +
+                       `<a class="form-mailto" href="mailto:1060200619@qq.com?subject=${subject}&body=${body}">点此手动发送邮件</a>`;
+        ok.classList.remove("hidden");
+        // 自动调起
+        window.location.href = `mailto:1060200619@qq.com?subject=${subject}&body=${body}`;
+      }
+      if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = submitText; }
+    });
+  }
+
+  /* =========================================================
      首页（单页，锚点 section 渲染）
      ========================================================= */
   function renderHome() {
@@ -358,76 +431,6 @@
       </section>
     `;
 
-    // 通用：把联系/咨询表单挂到 FormSubmit.co，发到 1060200619@qq.com
-    // 同时本地缓存 + 邮件兜底；首页联系区和关于页联系区共用此逻辑
-    function wireInquiryForm(form) {
-      if (!form) return;
-      const ok = form.querySelector(".form-success");
-      form.addEventListener("submit", async (e) => {
-        e.preventDefault();
-        const data = Object.fromEntries(new FormData(form).entries());
-        if (!data.company || !data.contact || !/^1[0-9]{10}$/.test(data.phone||"")) {
-          alert("请填写公司名称、联系人，并确保手机号格式正确");
-          return;
-        }
-        const submitBtn = form.querySelector(".cf-submit");
-        const submitText = submitBtn ? submitBtn.textContent : "";
-        if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = "正在提交..."; }
-
-        // 本地缓存一份（防止网络异常丢数据，浏览此设备的组委会也能看到）
-        try { localStorage.setItem("diie_inquiry_" + Date.now(), JSON.stringify(data)); } catch(_) {}
-
-        // ---- 主通道：FormSubmit.co AJAX（首次需点击激活邮件） ----
-        let delivered = false;
-        try {
-          const payload = {
-            _subject: "【大连工博会参展咨询】" + (data.company || "") + " · " + (data.contact || ""),
-            _template: "table",
-            _captcha: "false",
-            "公司名称": data.company || "",
-            "联系人": data.contact || "",
-            "联系电话": data.phone || "",
-            "邮箱": data.email || "",
-            "意向展区": data.zone || "",
-            "咨询内容": data.message || "",
-            "提交页面": location.pathname,
-            "提交时间": new Date().toLocaleString("zh-CN")
-          };
-          const r = await fetch("https://formsubmit.co/ajax/1060200619@qq.com", {
-            method: "POST",
-            headers: { "Content-Type": "application/json", Accept: "application/json" },
-            body: JSON.stringify(payload)
-          });
-          delivered = r.ok;
-        } catch (_) { delivered = false; }
-
-        if (delivered) {
-          ok.innerHTML = `✅ 提交成功！组委会将在 24 小时内联系 <b>${esc(data.contact)}</b>，邮件将发至 1060200619@qq.com。`;
-          ok.classList.remove("hidden");
-          form.reset();
-        } else {
-          // ---- 兜底：调起用户邮件客户端（需电脑配置默认邮件） ----
-          const subject = encodeURIComponent("【大连工博会参展咨询】" + (data.company || "") + " · " + (data.contact || ""));
-          const body = encodeURIComponent(
-            "公司名称：" + (data.company || "") + "\n" +
-            "联系人：" + (data.contact || "") + "\n" +
-            "联系电话：" + (data.phone || "") + "\n" +
-            "邮箱：" + (data.email || "") + "\n" +
-            "意向展区：" + (data.zone || "") + "\n" +
-            "咨询内容：" + (data.message || "") + "\n" +
-            "提交页面：" + location.pathname + "\n" +
-            "提交时间：" + new Date().toLocaleString("zh-CN")
-          );
-          ok.innerHTML = `⚠️ 自动发送未完成（可能需在邮箱中点击激活链接）。<br>` +
-                         `已为您打开邮件，发送至 <b>1060200619@qq.com</b> 后即可完成提交。<br>` +
-                         `<a class="form-mailto" href="mailto:1060200619@qq.com?subject=${subject}&body=${body}">点此手动发送邮件</a>`;
-          ok.classList.remove("hidden");
-          // 自动调起
-          window.location.href = `mailto:1060200619@qq.com?subject=${subject}&body=${body}`;
-        }
-        if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = submitText; }
-      });
-    }
     wireInquiryForm($("#homeContactForm"));
 
     // 首页 Hero 轮播驱动
