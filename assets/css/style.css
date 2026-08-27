@@ -831,3 +831,26 @@ ul { margin: 0 0 1em; padding-left: 1.2em; }
   display: inline-block; margin-top: 8px;
   color: var(--c-orange); text-decoration: underline; word-break: break-all;
 }
+/* 参展品牌大图板块（首页 #brands） */
+.brands-board {
+  background: #ffffff;
+  border-radius: 14px;
+  padding: 22px;
+  box-shadow: 0 12px 36px rgba(15,42,79,.10);
+  border: 1px solid rgba(15,42,79,.06);
+  text-align: center;
+}
+.brands-board img {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-width: 1080px;
+  margin: 0 auto;
+  border-radius: 8px;
+}
+.brands-cap {
+  margin-top: 14px;
+  font-size: .82rem;
+  color: var(--c-muted);
+  letter-spacing: .02em;
+}
