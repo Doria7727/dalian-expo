@@ -703,7 +703,7 @@ ul { margin: 0 0 1em; padding-left: 1.2em; }
 }
 
 /* 展会介绍二级页（renderAbout）—— 白色卡片 + 左竖条 + 序号合入标题 */
-.why-grid { gap: 24px; }
+.why-grid { display: grid; grid-template-columns: 1fr; gap: 24px; }
 .scope-grid { gap: 0 48px; }
 .reason-item {
   position: relative;
