@@ -396,7 +396,7 @@ ul { margin: 0 0 1em; padding-left: 1.2em; }
 /* =========================================================
    往届回顾（照片墙占位）
    ========================================================= */
-.past-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 14px; }
+.past-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
 .past-tile {
   position: relative; aspect-ratio: 4/3; border-radius: 10px; overflow: hidden;
   cursor: pointer; transition: transform .2s; background: var(--c-navy);
