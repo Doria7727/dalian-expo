@@ -784,17 +784,13 @@
       </section>
       <section class="section">
         <div class="container">
-          <div class="grid grid-2" style="align-items:stretch; gap:32px;">
-            <div class="venue-figure">
+          <div style="text-align:center; max-width:760px; margin:0 auto;">
+            <div class="venue-figure" style="margin:0 auto 22px; max-width:760px;">
               <img src="assets/img/travel/travel-overview.jpg" alt="大连自贸区国际会展中心实景" />
             </div>
-            <div>
-              <h2 style="font-size:1.3rem; margin:0 0 14px;">展馆地址</h2>
-              <div style="background:var(--c-navy); color:#fff; border-radius:var(--radius); padding:18px 22px;">
-                <p style="font-size:1.15rem; font-weight:700; margin:0 0 6px;">${esc(SITE.venue)}</p>
-                <p style="color:#cfe0f0; margin:0; font-size:.95rem;">${esc(TRANSPORT.addr)}</p>
-              </div>
-            </div>
+            <h2 style="font-size:1.3rem; margin:0 0 14px;">展馆地址</h2>
+            <p style="font-size:1.15rem; font-weight:700; margin:0 0 6px; color:var(--c-navy);">${esc(SITE.venue)}</p>
+            <p style="color:#555; margin:0; font-size:.95rem;">${esc(TRANSPORT.addr)}</p>
           </div>
         </div>
       </section>
