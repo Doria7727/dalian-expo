@@ -81,7 +81,7 @@
       <div class="container">
         <div class="footer-cols">
           <div class="footer-brand">
-            ${logoBlock()}
+            <img class="brand-img footer-logo-img" src="assets/img/logo-composite.png" alt="大连国际工业博览会 · 中国大连 iEF · UFI 认证" />
             <p class="footer-tagline">数智引领工业 · 东北工业标杆展会</p>
             <p class="footer-meta">${esc(SITE.edition)} · ${esc(SITE.year)}<br>${esc(SITE.dateText)}<br>${esc(SITE.venue)}</p>
           </div>

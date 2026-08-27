@@ -491,7 +491,7 @@ ul { margin: 0 0 1em; padding-left: 1.2em; }
   display: grid; grid-template-columns: 1.6fr 1fr 1fr 1.2fr; gap: 40px;
 }
 .footer-brand .brand { margin-bottom: 16px; }
-.footer-brand .brand-img { height: 68px; }
+.footer-brand .footer-logo-img { height: 56px; width: auto; max-width: 100%; display: block; object-fit: contain; margin-bottom: 14px; }
 .footer-tagline {
   font-size: .92rem; color: #9fb6cf; margin: 0 0 12px; line-height: 1.5;
 }
@@ -610,6 +610,16 @@ ul { margin: 0 0 1em; padding-left: 1.2em; }
 }
 .page-hero h1 { color: #fff; font-size: 2.2rem; margin: 0 0 8px; }
 .page-hero p { color: #cfe0f0; margin: 0; }
+.page-hero .about-meta { margin-top: 18px; }
+.page-hero .about-meta span { color: rgba(255,255,255,.65); }
+.page-hero .about-meta b { color: #fff; font-size: 1.05rem; margin-top: 4px; }
+.page-hero .stats-strip-inner {
+  border: 1px solid rgba(255,255,255,.08); border-radius: 12px;
+  padding: 6px 0; margin-top: 36px; background: rgba(255,255,255,.03);
+}
+.page-hero .stat-tile { padding: 18px 14px; border-right-color: rgba(255,255,255,.12); }
+.page-hero .stat-tile:last-child { border-right: 0; }
+.page-hero .stat-tile b { font-size: 2rem; color: #fff; }
 .breadcrumb { font-size: .85rem; color: #9fb6cf; margin-bottom: 12px; }
 .breadcrumb a { color: #9fb6cf; }
 .breadcrumb a:hover { color: #fff; }
@@ -662,7 +672,7 @@ ul { margin: 0 0 1em; padding-left: 1.2em; }
   .brand-txt span { display: none; }
   .brand-txt b { font-size: .92rem; }
   .brand-img { height: 44px; }
-  .footer-brand .brand-img { height: 56px; }
+  .footer-brand .footer-logo-img { height: 48px; margin-bottom: 10px; }
 
   .hero-text h1 { font-size: 1.7rem; }
   .hero-text .hero-title { font-size: 1.2rem; }
