@@ -217,5 +217,17 @@
       { "q": "展位可以挑选位置吗？", "a": "可以。签约时根据先后与展区规划统一安排，热门展区建议尽早报名。" },
       { "q": "参展企业有宣传支持吗？", "a": "凡签约参展，免费享受官方公众号专属推文与现场展商专访两套线上宣传。" }
     ]
-  }
+  },
+  "PAST_PHOTOS": [
+    { "img": "assets/img/past/past01.jpg", "label": "2026 现场" },
+    { "img": "assets/img/past/past02.jpg", "label": "2026 现场" },
+    { "img": "assets/img/past/past03.jpg", "label": "2026 现场" },
+    { "img": "assets/img/past/past04.jpg", "label": "2026 现场" },
+    { "img": "assets/img/past/past05.jpg", "label": "2026 现场" },
+    { "img": "assets/img/past/past06.jpg", "label": "2026 现场" },
+    { "img": "assets/img/past/past07.jpg", "label": "2026 现场" },
+    { "img": "assets/img/past/past08.jpg", "label": "2026 现场" },
+    { "img": "assets/img/past/past09.jpg", "label": "2026 现场" },
+    { "img": "assets/img/past/past10.jpg", "label": "2026 现场" }
+  ]
 }

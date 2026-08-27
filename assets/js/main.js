@@ -6,7 +6,7 @@
 (function () {
   "use strict";
 
-  let SITE, NAV, ABOUT, EXHIBIT_SCOPE, EXHIBITORS, NEWS, SCHEDULE, TRANSPORT, HOTELS, APPLY_INFO;
+  let SITE, NAV, ABOUT, EXHIBIT_SCOPE, EXHIBITORS, NEWS, SCHEDULE, TRANSPORT, HOTELS, APPLY_INFO, PAST_PHOTOS;
 
   const $ = (s, ctx = document) => ctx.querySelector(s);
   const $$ = (s, ctx = document) => Array.from(ctx.querySelectorAll(s));
@@ -150,26 +150,12 @@
         </div>`;
     }).join("");
 
-    // 往届回顾占位（照片墙用渐变 + SVG 工厂图标，每张图右上角"往届"标）
-    const pastPhotos = Array.from({length: 12}).map((_, i) => {
-      const hues = [
-        ["#0d2b4e","#1f5f8b"],["#e8541e","#ff8a4c"],["#143a63","#3a86c8"],
-        ["#1a3a5c","#5a8fb8"],["#2a4a6c","#7aa8c8"],["#0a2647","#3d6a96"],
-        ["#3a5a7c","#8aa8c8"],["#1f3a5c","#4f7a9c"],["#264a6c","#6a9abc"],
-        ["#0d3b5e","#2d6b8e"],["#1a4a6e","#5a8aae"],["#2a3a5a","#6a7a9a"]
-      ];
-      const [a,b] = hues[i % hues.length];
-      return `
-        <div class="past-tile" style="background:linear-gradient(135deg,${a},${b});">
-          <div class="past-icon">
-            <svg viewBox="0 0 64 64" fill="none" stroke="rgba(255,255,255,.4)" stroke-width="2">
-              <path d="M8 50 L8 30 L20 22 L20 50 Z M28 50 L28 18 L44 12 L44 50 Z M52 50 L52 26 L60 22 L60 50 Z"/>
-              <line x1="4" y1="50" x2="62" y2="50"/>
-            </svg>
-          </div>
-          <span class="past-label">往届</span>
-        </div>`;
-    }).join("");
+    // 往届回顾照片墙（用 data.json 的 PAST_PHOTOS 真实照片）
+    const pastPhotos = (PAST_PHOTOS || []).map(p => `
+      <div class="past-tile">
+        <img src="${esc(p.img)}" alt="${esc(p.alt || '往届大连工博会现场')}" loading="lazy" />
+        <span class="past-label">${esc(p.label || '往届')}</span>
+      </div>`).join("");
 
     $("#page-content").innerHTML = `
       <!-- HERO（左右分屏） -->
@@ -929,7 +915,7 @@
       SITE = D.SITE; NAV = D.NAV; ABOUT = D.ABOUT;
       EXHIBIT_SCOPE = D.EXHIBIT_SCOPE; EXHIBITORS = D.EXHIBITORS;
       NEWS = D.NEWS; SCHEDULE = D.SCHEDULE; TRANSPORT = D.TRANSPORT;
-      HOTELS = D.HOTELS; APPLY_INFO = D.APPLY_INFO;
+      HOTELS = D.HOTELS; APPLY_INFO = D.APPLY_INFO; PAST_PHOTOS = D.PAST_PHOTOS;
     } catch (e) {
       const box = document.getElementById("page-content");
       const msg = esc(String((e && e.message) || e));

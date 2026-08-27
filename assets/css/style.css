@@ -328,19 +328,24 @@ ul { margin: 0 0 1em; padding-left: 1.2em; }
    往届回顾（照片墙占位）
    ========================================================= */
 .past-grid {
-  display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px;
+  display: grid; grid-template-columns: repeat(5, 1fr); gap: 14px;
 }
 .past-tile {
   position: relative; aspect-ratio: 4/3; border-radius: 10px; overflow: hidden;
   display: grid; place-items: center; cursor: pointer; transition: transform .2s;
+  background: var(--c-navy);
 }
 .past-tile:hover { transform: scale(1.02); }
-.past-icon { width: 60%; height: 60%; opacity: .7; }
-.past-icon svg { width: 100%; height: 100%; }
+.past-tile img {
+  width: 100%; height: 100%; object-fit: cover; display: block;
+  transition: transform .35s ease;
+}
+.past-tile:hover img { transform: scale(1.06); }
 .past-label {
   position: absolute; top: 10px; right: 10px;
   background: rgba(255,255,255,.92); color: var(--c-navy);
   font-size: .72rem; font-weight: 600; padding: 3px 10px; border-radius: 4px;
+  box-shadow: 0 2px 6px rgba(0,0,0,.15);
 }
 
 /* =========================================================
@@ -573,7 +578,7 @@ ul { margin: 0 0 1em; padding-left: 1.2em; }
   .stats-strip-inner { grid-template-columns: repeat(2, 1fr); }
   .stat-tile:nth-child(2) { border-right: 0; }
   .stat-tile:nth-child(1), .stat-tile:nth-child(2) { border-bottom: 1px solid rgba(255,255,255,.08); }
-  .past-grid { grid-template-columns: repeat(3, 1fr); }
+  .past-grid { grid-template-columns: repeat(2, 1fr); }
 }
 @media (max-width: 768px) {
   :root { --header-h: 60px; }
