@@ -496,12 +496,29 @@
     ];
     const statsHtml = aboutStats.map(s => `<div class="stat-tile"><b>${s.num}</b><span>${s.label}</span></div>`).join("");
 
-    const whyHtml = (WHY_EXHIBIT || []).map(w => `
+    // why 项：前 N-1 条正常渲染，最后一条（通常是文案最长的那条）
+    // 自动改用「跨列 + 双栏」布局，避免单列挤在一侧导致客户需下拉才能看全
+    function renderWhyItem(w) {
+      const paragraphs = String(w.desc || "").split(/\n+/).map(s => s.trim()).filter(Boolean);
+      const subs = paragraphs.map(p => `<div class="reason-sub">${esc(p)}</div>`).join("");
+      return `
+      <div class="reason-item reason-spread">
+        <div class="reason-num">${esc(w.num)}</div>
+        <h3>${esc(w.title)}</h3>
+        <div class="reason-body">${subs}</div>
+      </div>`;
+    }
+    const whyArr = WHY_EXHIBIT || [];
+    const whyLastIdx = whyArr.length - 1;
+    const whyHtml = whyArr.map((w, idx) => {
+      if (idx === whyLastIdx) return renderWhyItem(w);
+      return `
       <div class="reason-item">
         <div class="reason-num">${esc(w.num)}</div>
         <h3>${esc(w.title)}</h3>
         <p>${esc(w.desc).replace(/\n/g, "<br>")}</p>
-      </div>`).join("");
+      </div>`;
+    }).join("");
 
     const scopeHtml = (SCOPE_DETAIL || []).map(s => `
       <div class="scope-item">
