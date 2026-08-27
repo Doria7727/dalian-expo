@@ -754,19 +754,12 @@
           <p>${esc(r.desc)}</p>
         </div>
       </li>`).join("");
-    const ht = HOTELS.map(h => `
-      <div class="card hotel-card">
-        <h3 style="margin-top:0;">${esc(h.name)}</h3>
-        <p class="muted">📍 ${esc(h.dist)}</p>
-        <p>${esc(h.note)}</p>
-        <p class="price">${esc(h.price)}</p>
-      </div>`).join("");
     $("#page-content").innerHTML = `
       <section class="page-hero">
         <div class="container">
           <div class="breadcrumb"><a href="index.html">首页</a> / 交通与酒店</div>
           <h1>交通与酒店指南</h1>
-          <p>展馆位于大连保税区，多种出行方案与周边协议酒店，助您轻松规划行程</p>
+          <p>展馆位于大连保税区，多种出行方案，助您轻松规划行程</p>
         </div>
       </section>
       <section class="section">
@@ -795,12 +788,7 @@
           <ul class="route-list">${routesHtml}</ul>
         </div>
       </section>
-      <section class="section alt">
-        <div class="container">
-          <div class="section-head"><span class="eyebrow">Hotels</span><h2>周边协议酒店</h2><p>预登记观众可凭确认短信享受协议价（示例数据）</p></div>
-          <div class="grid grid-4">${ht}</div>
-        </div>
-      </section>`;
+`;
   }
   function renderRegister() {
     $("#page-content").innerHTML = `
