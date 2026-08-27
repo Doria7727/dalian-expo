@@ -42,6 +42,11 @@
   },
   "NAV": [
     {
+      "label": "首页",
+      "href": "index.html",
+      "page": "home"
+    },
+    {
       "label": "展会介绍",
       "href": "about.html",
       "page": "about"

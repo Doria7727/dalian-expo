@@ -266,6 +266,21 @@
         </div>
       </section>
 
+      <!-- 参展品牌 -->
+      <section class="block block-alt" id="brands">
+        <div class="container">
+          <div class="section-head">
+            <span class="eyebrow">PARTICIPATING BRANDS</span>
+            <h2><a href="brands.html">参展品牌 →</a></h2>
+            <p>汇聚全球工业领军企业，往届部分参展品牌一览（仅供参考，排名不分先后）</p>
+          </div>
+          <a class="brands-board" href="brands.html" aria-label="查看完整参展品牌">
+            <img src="assets/img/brands/brands-overview.png" alt="往届参展品牌：GROB / Mazak / EMAG / Panasonic / Hexagon / ZEISS / SANYO / FLUKE / KUKA / FANUC / YASKAWA / 三菱 / SMC / 一汽-大众 / OTC / SIEMENS / Mahr / rexroth / Schneider Electric / RENISHAW / KEYENCE 基恩士 / 迪能机床 / 亚德客 / 大族激光 / Unitree 宇树 / 新松 / 海康机器人 / 钛虎机器人 / TSUGAMI / 凯特精机 / Linde / 德永 / Mitutoyo / KYOCERA 等" loading="lazy" />
+            <span class="brands-cap">仅选取部分品牌（logo），排名不分先后 · 点击查看完整列表 →</span>
+          </a>
+        </div>
+      </section>
+
       <!-- 往届回顾 -->
       <section class="block" id="past">
         <div class="container">
@@ -275,21 +290,6 @@
             <p>历届展会盛况，记录每一届的精彩瞬间与商贸成果</p>
           </div>
           <div class="past-grid">${pastPhotos}</div>
-        </div>
-      </section>
-
-      <!-- 参展品牌 -->
-      <section class="block block-alt" id="brands">
-        <div class="container">
-          <div class="section-head">
-            <span class="eyebrow">PARTICIPATING BRANDS</span>
-            <h2>参展品牌</h2>
-            <p>汇聚全球工业领军企业，往届部分参展品牌一览（仅供参考，排名不分先后）</p>
-          </div>
-          <div class="brands-board">
-            <img src="assets/img/brands/brands-overview.png" alt="往届参展品牌：GROB / Mazak / EMAG / Panasonic / Hexagon / ZEISS / SANYO / FLUKE / KUKA / FANUC / YASKAWA / 三菱 / SMC / 一汽-大众 / OTC / SIEMENS / Mahr / rexroth / Schneider Electric / RENISHAW / KEYENCE 基恩士 / 迪能机床 / 亚德客 / 大族激光 / Unitree 宇树 / 新松 / 海康机器人 / 钛虎机器人 / TSUGAMI / 凯特精机 / Linde / 德永 / Mitutoyo / KYOCERA 等" loading="lazy" />
-            <p class="brands-cap">仅选取部分品牌（logo），排名不分先后</p>
-          </div>
         </div>
       </section>
 
@@ -986,6 +986,25 @@
       </section>`;
   }
 
+  function renderBrands() {
+    $("#page-content").innerHTML = `
+      <section class="page-hero">
+        <div class="container">
+          <div class="breadcrumb"><a href="index.html">首页</a> / 参展品牌</div>
+          <h1>参展品牌</h1>
+          <p>汇聚全球工业领军企业，往届部分参展品牌一览（仅供参考，排名不分先后）</p>
+        </div>
+      </section>
+      <section class="section">
+        <div class="container">
+          <div class="brands-page-board">
+            <img src="assets/img/brands/brands-overview.png" alt="往届参展品牌：GROB / Mazak / EMAG / Panasonic / Hexagon / ZEISS / SANYO / FLUKE / KUKA / FANUC / YASKAWA / 三菱 / SMC / 一汽-大众 / OTC / SIEMENS / Mahr / rexroth / Schneider Electric / RENISHAW / KEYENCE 基恩士 / 迪能机床 / 亚德客 / 大族激光 / Unitree 宇树 / 新松 / 海康机器人 / 钛虎机器人 / TSUGAMI / 凯特精机 / Linde / 德永 / Mitutoyo / KYOCERA 等" loading="lazy" />
+            <p class="brands-page-cap">仅选取部分品牌（logo），排名不分先后</p>
+          </div>
+        </div>
+      </section>`;
+  }
+
   function renderApply() {
     const fee = APPLY_INFO.fee.map(f => `
       <div class="info-row"><div class="ic">💰</div><div>
@@ -1134,7 +1153,7 @@
     const page = document.body.getAttribute("data-page");
     const map = {
       home: renderHome, about: renderAbout, exhibits: renderExhibits,
-      exhibitors: renderExhibitors, news: renderNews, newsDetail: renderNewsDetail,
+      exhibitors: renderExhibitors, brands: renderBrands, news: renderNews, newsDetail: renderNewsDetail,
       schedule: renderSchedule, travel: renderTravel, register: renderRegister,
       apply: renderApply, contact: renderContact, guide: renderGuide
     };
