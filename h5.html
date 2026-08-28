@@ -94,6 +94,30 @@
   .contact p{margin:6px 0; font-size:.92rem; opacity:.92;}
   .contact a{color:#ffd2b8; font-weight:700; text-decoration:none;}
 
+  /* Apply form（内嵌报名表，复用 FormSubmit 后台） */
+  .apply-form label{display:block; font-size:.88rem; font-weight:700; color:var(--navy); margin-bottom:6px;}
+  .apply-form .req{color:var(--accent);}
+  .apply-form .field{margin-bottom:13px;}
+  .apply-form .row2{display:grid; grid-template-columns:1fr 1fr; gap:12px;}
+  .apply-form input,.apply-form select,.apply-form textarea{
+    width:100%; border:1px solid var(--line); border-radius:12px;
+    padding:13px 14px; font-size:1rem; color:var(--ink); background:var(--soft);
+    font-family:inherit; outline:none; -webkit-appearance:none; transition:border-color .15s,background .15s;}
+  .apply-form input:focus,.apply-form select:focus,.apply-form textarea:focus{border-color:var(--accent); background:#fff;}
+  .apply-form textarea{resize:vertical; line-height:1.6;}
+  .apply-form .err{color:#e74c3c; font-size:.76rem; min-height:1em; margin-top:4px;}
+  .apply-form .hidden{display:none;}
+  .apply-form .submit-btn{display:block; width:100%; background:var(--accent); color:#fff; border:0;
+    font-weight:800; font-size:1.05rem; padding:15px; border-radius:14px; margin-top:6px;
+    box-shadow:0 10px 24px rgba(232,84,30,.35);}
+  .apply-form .submit-btn:active{transform:translateY(1px);}
+  .apply-form .submit-btn:disabled{opacity:.6;}
+  .apply-form .form-note{font-size:.76rem; color:var(--muted); margin:12px 0 0; line-height:1.6;}
+  .apply-form .form-success{margin-top:14px; padding:14px 16px; border-radius:12px; font-size:.9rem; line-height:1.65;
+    background:rgba(46,160,67,.1); color:#1f7a33; border:1px solid rgba(46,160,67,.3);}
+  .apply-form .form-success.warn{background:rgba(232,84,30,.1); color:#a8390f; border-color:rgba(232,84,30,.3);}
+  .apply-form .form-success a{color:var(--navy); font-weight:700;}
+
   /* Fixed bottom bar */
   .bar{position:fixed; bottom:0; left:0; right:0; max-width:480px; margin:0 auto;
     background:rgba(255,255,255,.96); backdrop-filter:blur(8px); border-top:1px solid var(--line);
@@ -113,7 +137,7 @@
 
 <div class="bar">
   <a class="ghost" href="tel:18624268832">电话咨询</a>
-  <a class="primary" href="apply.html">立即参展报名</a>
+  <a class="primary" href="#apply">立即参展报名</a>
 </div>
 
 <script>
@@ -148,7 +172,7 @@ function render(d){
       <b>${esc(s.dateText||'')}</b><br>
       地点：${esc(s.venue||'大连自贸区国际会展中心')}
     </div>
-    <a class="hero-cta" href="apply.html">立即参展报名 →</a>
+    <a class="hero-cta" href="#apply">立即参展报名 →</a>
   </section>
 
   <div class="stats">${statsHtml}</div>
@@ -183,6 +207,69 @@ function render(d){
     ${routesHtml}
   </section>
 
+  <section class="sec" id="apply">
+    <h2><span class="bar"></span>参展报名</h2>
+    <form class="apply-form" id="h5ApplyForm" novalidate>
+      <div class="field">
+        <label>企业名称 <span class="req">*</span></label>
+        <input name="company" required placeholder="请填写营业执照全称">
+        <div class="err" data-for="company"></div>
+      </div>
+      <div class="row2">
+        <div class="field">
+          <label>联系人 <span class="req">*</span></label>
+          <input name="contact" required>
+          <div class="err" data-for="contact"></div>
+        </div>
+        <div class="field">
+          <label>手机号 <span class="req">*</span></label>
+          <input name="phone" required pattern="1[0-9]{10}">
+          <div class="err" data-for="phone"></div>
+        </div>
+      </div>
+      <div class="field">
+        <label>职务</label>
+        <input name="title" placeholder="如 市场总监">
+      </div>
+      <div class="field">
+        <label>邮箱</label>
+        <input name="email" type="email" placeholder="选填">
+        <div class="err" data-for="email"></div>
+      </div>
+      <div class="field">
+        <label>展位类型 <span class="req">*</span></label>
+        <select name="boothType" required>
+          <option value="">请选择</option>
+          <option value="标准展位">标准展位（3m×3m）</option>
+          <option value="室内光地">室内光地（≥36㎡）</option>
+        </select>
+        <div class="err" data-for="boothType"></div>
+      </div>
+      <div class="field" id="h5StdWrap">
+        <label>标准展位数量（个） <span class="req">*</span></label>
+        <input name="boothStd" type="number" min="1" placeholder="如 2">
+        <div class="err" data-for="boothStd"></div>
+      </div>
+      <div class="field hidden" id="h5RawWrap">
+        <label>光地面积（㎡） <span class="req">*</span></label>
+        <input name="boothRaw" type="number" min="36" placeholder="不少于 36">
+        <div class="err" data-for="boothRaw"></div>
+      </div>
+      <div class="field">
+        <label>主营产品 / 展品类别 <span class="req">*</span></label>
+        <input name="products" required placeholder="如 数控机床、工业机器人">
+        <div class="err" data-for="products"></div>
+      </div>
+      <div class="field">
+        <label>备注 / 特殊需求</label>
+        <textarea name="remark" rows="3" placeholder="可填写期望展位位置、搭建需求等"></textarea>
+      </div>
+      <button type="submit" class="submit-btn">提交参展报名</button>
+      <p class="form-note">提交后，报名信息将发送到组委会邮箱 1060200619@qq.com，主办方 1 个工作日内与您联系。</p>
+      <div class="form-success hidden" id="h5ApplyOk"></div>
+    </form>
+  </section>
+
   <section class="contact">
     <h2 style="color:#fff;">参展咨询</h2>
     <p>联系人：${esc((s.contact&&s.contact.person)||'李玥')}</p>
@@ -192,6 +279,100 @@ function render(d){
   `;
 
   document.getElementById('app').innerHTML = html;
+
+  /* ---------- 内嵌报名表单：展位类型联动 + 校验 + FormSubmit 后台 ---------- */
+  const af = document.getElementById('h5ApplyForm');
+  if (af) {
+    const aType = af.querySelector('[name="boothType"]');
+    const aStdWrap = document.getElementById('h5StdWrap');
+    const aRawWrap = document.getElementById('h5RawWrap');
+    const aSync = () => {
+      const isStd = aType.value === '标准展位';
+      aStdWrap.classList.toggle('hidden', !isStd);
+      aRawWrap.classList.toggle('hidden', isStd);
+    };
+    aType.addEventListener('change', aSync);
+    aSync();
+
+    af.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      let ok = true;
+      const setErr = (name, msg) => {
+        const box = af.querySelector('.err[data-for="' + name + '"]');
+        if (box) box.textContent = msg || '';
+        if (msg) ok = false;
+      };
+      ['company','contact','phone','boothType','boothStd','boothRaw','products','email']
+        .forEach(n => setErr(n, ''));
+      const data = Object.fromEntries(new FormData(af).entries());
+      if (!data.company) setErr('company', '请填写企业名称');
+      if (!data.contact) setErr('contact', '请填写联系人');
+      if (!/^1[0-9]{10}$/.test(data.phone || '')) setErr('phone', '请填写正确的 11 位手机号');
+      if (!data.boothType) setErr('boothType', '请选择展位类型');
+      if (data.boothType === '标准展位' && !(Number(data.boothStd) > 0)) setErr('boothStd', '请填写标准展位数量');
+      if (data.boothType === '室内光地' && !(Number(data.boothRaw) >= 36)) setErr('boothRaw', '光地面积不少于 36 ㎡');
+      if (!data.products) setErr('products', '请填写主营产品/展品类别');
+      if (data.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) setErr('email', '邮箱格式不正确');
+      if (!ok) return;
+
+      try { localStorage.setItem('diie_apply_' + Date.now(), JSON.stringify(data)); } catch (_) {}
+
+      const aBtn = af.querySelector('button[type="submit"]');
+      const aOk = document.getElementById('h5ApplyOk');
+      if (aBtn) { aBtn.disabled = true; aBtn.textContent = '正在提交...'; }
+
+      let delivered = false;
+      try {
+        const payload = {
+          _subject: '【大连工博会·参展报名】' + (data.company || '') + ' · ' + (data.contact || ''),
+          _template: 'table',
+          _captcha: 'false',
+          '企业名称': data.company || '',
+          '联系人': data.contact || '',
+          '手机号': data.phone || '',
+          '职务': data.title || '',
+          '邮箱': data.email || '',
+          '展位类型': data.boothType || '',
+          '标准展位数量（个）': data.boothStd || '',
+          '光地面积（㎡）': data.boothRaw || '',
+          '主营产品/展品类别': data.products || '',
+          '备注/特殊需求': data.remark || '',
+          '提交时间': new Date().toLocaleString('zh-CN')
+        };
+        const r = await fetch('https://formsubmit.co/ajax/1060200619@qq.com', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        delivered = r.ok;
+      } catch (_) { delivered = false; }
+
+      if (aBtn) { aBtn.disabled = false; aBtn.textContent = '提交参展报名'; }
+
+      if (delivered) {
+        aOk.className = 'form-success';
+        aOk.innerHTML = '✅ 已收到！报名表已发送到组委会邮箱 <b>1060200619@qq.com</b>，<b>' + esc(data.company) + '</b>（' + esc(data.contact) + '）将在 <b>1 个工作日内</b>与您联系对接展位事宜。';
+      } else {
+        const subject = encodeURIComponent('【大连工博会·参展报名】' + (data.company || '') + ' · ' + (data.contact || ''));
+        const body = encodeURIComponent(
+          '企业名称：' + (data.company || '') + '\n' +
+          '联系人：' + (data.contact || '') + '\n' +
+          '手机号：' + (data.phone || '') + '\n' +
+          '展位类型：' + (data.boothType || '') + '\n' +
+          (data.boothType === '标准展位' ? '标准展位数量：' + (data.boothStd || '') + '\n' : '') +
+          (data.boothType === '室内光地' ? '光地面积：' + (data.boothRaw || '') + '㎡\n' : '') +
+          '主营产品：' + (data.products || '') + '\n' +
+          '备注：' + (data.remark || '') + '\n'
+        );
+        aOk.className = 'form-success warn';
+        aOk.innerHTML = '⚠️ 提交未发送出去。请拨打组委会电话 <a href="tel:18624268832"><b>18624268832</b></a>（李玥），或点此处直接发邮件：<a href="mailto:1060200619@qq.com?subject=' + subject + '&body=' + body + '">1060200619@qq.com</a>。';
+      }
+      aOk.classList.remove('hidden');
+      af.reset();
+      aSync();
+      aOk.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    });
+  }
 
   // 进入视口淡入
   const io = new IntersectionObserver((es)=>{
