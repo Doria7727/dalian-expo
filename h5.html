@@ -65,6 +65,15 @@
   .figure img{width:100%;}
   .cap{font-size:.78rem; color:var(--muted); text-align:center; margin-top:8px;}
 
+  /* Past photos gallery (horizontal swipe) */
+  .gallery{display:flex; gap:12px; overflow-x:auto; scroll-snap-type:x mandatory;
+    padding:4px 2px 8px; -webkit-overflow-scrolling:touch; margin:0 -20px;}
+  .gallery::-webkit-scrollbar{display:none;}
+  .gallery figure{flex:0 0 76%; margin:0; scroll-snap-align:center; border-radius:14px;
+    overflow:hidden; border:1px solid var(--line); background:var(--soft);}
+  .gallery img{width:100%; height:210px; object-fit:cover; display:block;}
+  .gallery-hint{font-size:.74rem; color:var(--muted); text-align:center; margin-top:10px;}
+
   /* Routes */
   .route{display:flex; gap:14px; padding:14px 0; border-bottom:1px dashed var(--line);}
   .route:last-child{border-bottom:0;}
@@ -116,11 +125,13 @@ function render(d){
   const trans = d.TRANSPORT||{};
   const routes = trans.routes||[];
   const stats = s.stats||[];
+  const past = d.PAST_PHOTOS||[];
 
   const statsHtml = stats.map(x=>`<div class="stat"><b>${esc(x.num)}</b><span>${esc(x.label)}</span></div>`).join('');
   const whyHtml = why.map(w=>`<div class="reason reveal"><h3>${esc(w.num)}、${esc(w.title)}</h3><p>${esc(w.desc).replace(/\n/g,'<br>')}</p></div>`).join('');
   const tagsHtml = scope.map(g=>`<span class="tag">${esc(g.group)}</span>`).join('');
   const routesHtml = routes.map(r=>`<div class="route"><div class="num">${esc(r.num)}</div><div><h4>${esc(r.title)}</h4><p>${esc(r.desc)}</p></div></div>`).join('');
+  const pastHtml = past.map(p=>`<figure><img src="${esc(p.img)}" alt="往届回顾" loading="lazy"></figure>`).join('');
 
   const html = `
   <section class="hero">
@@ -150,6 +161,12 @@ function render(d){
     <h2><span class="bar"></span>往届参展品牌</h2>
     <figure class="figure"><img src="assets/img/brands/brands-overview.jpg" alt="往届参展品牌" loading="lazy"></figure>
     <div class="cap">仅选取部分品牌 logo，排名不分先后</div>
+  </section>
+
+  <section class="sec">
+    <h2><span class="bar"></span>往届回顾</h2>
+    <div class="gallery">${pastHtml}</div>
+    <div class="gallery-hint">← 左右滑动查看更多往届现场 →</div>
   </section>
 
   <section class="sec">
