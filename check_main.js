@@ -82,17 +82,18 @@
         <div class="footer-cols">
           <div class="footer-brand">
             <img class="brand-img footer-logo-img" src="assets/img/logo-composite.png" alt="大连国际工业博览会 · 中国大连 iEF · UFI 认证" />
-            <p class="footer-tagline">数智引领工业 · 大连国际工业博览会</p>
+            <p class="footer-tagline">数智引领工业 · 东北工业标杆展会</p>
             <p class="footer-meta">${esc(SITE.edition)} · ${esc(SITE.year)}<br>${esc(SITE.dateText)}<br>${esc(SITE.venue)}</p>
           </div>
           <div class="footer-col">
             <h4>快速导航</h4>
             ${quick}
             <a href="apply.html">参展报名</a>
+            <a href="register.html">参观预登记</a>
           </div>
           <div class="footer-col">
-            <h4>参展服务</h4>
-            <a href="brands.html">参展品牌</a>
+            <h4>参观服务</h4>
+            <a href="exhibitors.html">展商名录</a>
             <a href="schedule.html">日程安排</a>
             <a href="travel.html">交通与酒店</a>
             <a href="news.html">新闻动态</a>
@@ -110,101 +111,6 @@
           © ${SITE.year} ${esc(SITE.name)} 版权所有 · 主办：${esc(SITE.organizer)}
         </div>
       </div>`;
-  }
-
-  /* =========================================================
-     通用：把联系/咨询表单挂到 FormSubmit.co，发到 1060200619@qq.com
-     同时本地缓存 + 邮件兜底；首页联系区和关于页联系区共用此逻辑
-     ========================================================= */
-  // 同源 Cloudflare 函数代理：先 POST 到 /api/apply（站点本身在 Cloudflare，国内稳定可达），
-  // 由边缘服务端转发给 FormSubmit.co，绕开"手机直连国外服务被墙/超时"导致提交失败的问题。
-  // 代理失败则直连 FormSubmit 兜底，再失败由调用方走 mailto。
-  async function postForm(payload) {
-    // 1) 同源代理（首选）
-    try {
-      const r = await fetch("/api/apply", {
-        method: "POST",
-        headers: { "Content-Type": "application/json", Accept: "application/json" },
-        body: JSON.stringify(payload)
-      });
-      if (r.ok) {
-        const j = await r.json().catch(() => ({}));
-        if (j.success === true || j.success === "true") return true;
-      }
-    } catch (_) {}
-    // 2) 直连 FormSubmit 兜底
-    try {
-      const r = await fetch("https://formsubmit.co/ajax/1060200619@qq.com", {
-        method: "POST",
-        headers: { "Content-Type": "application/json", Accept: "application/json" },
-        body: JSON.stringify(payload)
-      });
-      return r.ok;
-    } catch (_) { return false; }
-  }
-
-  function wireInquiryForm(form) {
-    if (!form) return;
-    const ok = form.querySelector(".form-success");
-    form.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const data = Object.fromEntries(new FormData(form).entries());
-      if (!data.company || !data.contact || !/^1[0-9]{10}$/.test(data.phone||"")) {
-        alert("请填写公司名称、联系人，并确保手机号格式正确");
-        return;
-      }
-      const submitBtn = form.querySelector(".cf-submit");
-      const submitText = submitBtn ? submitBtn.textContent : "";
-      if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = "正在提交..."; }
-
-      // 本地缓存一份（防止网络异常丢数据，浏览此设备的组委会也能看到）
-      try { localStorage.setItem("diie_inquiry_" + Date.now(), JSON.stringify(data)); } catch(_) {}
-
-      // ---- 主通道：同源 Cloudflare 函数代理 /api/apply（再转发 FormSubmit.co） ----
-      let delivered = false;
-      try {
-        const payload = {
-          _subject: "【大连工博会参展咨询】" + (data.company || "") + " · " + (data.contact || ""),
-          _template: "table",
-          _captcha: "false",
-          "公司名称": data.company || "",
-          "联系人": data.contact || "",
-          "联系电话": data.phone || "",
-          "邮箱": data.email || "",
-          "意向展区": data.zone || "",
-          "咨询内容": data.message || "",
-          "提交页面": location.pathname,
-          "提交时间": new Date().toLocaleString("zh-CN")
-        };
-        delivered = await postForm(payload);
-      } catch (_) { delivered = false; }
-
-      if (delivered) {
-        ok.innerHTML = `✅ 提交成功！组委会将在 24 小时内联系 <b>${esc(data.contact)}</b>，邮件将发至 1060200619@qq.com。`;
-        ok.classList.remove("hidden");
-        form.reset();
-      } else {
-        // ---- 兜底：调起用户邮件客户端（需电脑配置默认邮件） ----
-        const subject = encodeURIComponent("【大连工博会参展咨询】" + (data.company || "") + " · " + (data.contact || ""));
-        const body = encodeURIComponent(
-          "公司名称：" + (data.company || "") + "\n" +
-          "联系人：" + (data.contact || "") + "\n" +
-          "联系电话：" + (data.phone || "") + "\n" +
-          "邮箱：" + (data.email || "") + "\n" +
-          "意向展区：" + (data.zone || "") + "\n" +
-          "咨询内容：" + (data.message || "") + "\n" +
-          "提交页面：" + location.pathname + "\n" +
-          "提交时间：" + new Date().toLocaleString("zh-CN")
-        );
-        ok.innerHTML = `⚠️ 自动发送未完成（可能需在邮箱中点击激活链接）。<br>` +
-                       `已为您打开邮件，发送至 <b>1060200619@qq.com</b> 后即可完成提交。<br>` +
-                       `<a class="form-mailto" href="mailto:1060200619@qq.com?subject=${subject}&body=${body}">点此手动发送邮件</a>`;
-        ok.classList.remove("hidden");
-        // 自动调起
-        window.location.href = `mailto:1060200619@qq.com?subject=${subject}&body=${body}`;
-      }
-      if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = submitText; }
-    });
   }
 
   /* =========================================================
@@ -279,7 +185,7 @@
             </div>
             <div class="hero-actions">
               <a class="btn btn-primary" href="${navHref('#contact')}">申请参展 →</a>
-              <a class="btn btn-outline" href="about.html">了解更多</a>
+              <a class="btn btn-outline" href="${navHref('#about')}">了解更多</a>
             </div>
           </div>
           <div class="hero-visual">
@@ -453,7 +359,74 @@
       </section>
     `;
 
-    wireInquiryForm($("#homeContactForm"));
+    // 首页联系表单提交：通过 FormSubmit.co 把数据同步到 1060200619@qq.com
+    // 本地缓存 + 可选调起邮件兜底；用户在自己邮箱即可看到全部咨询。
+    const form = $("#homeContactForm");
+    if (form) {
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const data = Object.fromEntries(new FormData(form).entries());
+        if (!data.company || !data.contact || !/^1[0-9]{10}$/.test(data.phone||"")) {
+          alert("请填写公司名称、联系人，并确保手机号格式正确");
+          return;
+        }
+        const submitBtn = form.querySelector(".cf-submit");
+        const ok = $("#homeContactOk");
+        const submitText = submitBtn ? submitBtn.textContent : "";
+        if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = "正在提交..."; }
+
+        // 本地缓存一份（防止网络异常丢数据，浏览此设备的组委会也能看到）
+        try { localStorage.setItem("diie_inquiry_" + Date.now(), JSON.stringify(data)); } catch(_) {}
+
+        // ---- 主通道：FormSubmit.co AJAX（首次需点击激活邮件） ----
+        let delivered = false;
+        try {
+          const payload = {
+            _subject: "【大连工博会参展咨询】" + (data.company || "") + " · " + (data.contact || ""),
+            _template: "table",
+            _captcha: "false",
+            "公司名称": data.company || "",
+            "联系人": data.contact || "",
+            "联系电话": data.phone || "",
+            "邮箱": data.email || "",
+            "意向展区": data.zone || "",
+            "咨询内容": data.message || "",
+            "提交时间": new Date().toLocaleString("zh-CN")
+          };
+          const r = await fetch("https://formsubmit.co/ajax/1060200619@qq.com", {
+            method: "POST",
+            headers: { "Content-Type": "application/json", Accept: "application/json" },
+            body: JSON.stringify(payload)
+          });
+          delivered = r.ok;
+        } catch (_) { delivered = false; }
+
+        if (delivered) {
+          ok.innerHTML = `✅ 提交成功！组委会将在 24 小时内联系 <b>${esc(data.contact)}</b>，邮件将发至 1060200619@qq.com。`;
+          ok.classList.remove("hidden");
+          form.reset();
+        } else {
+          // ---- 兜底：调起用户邮件客户端（需电脑配置默认邮件） ----
+          const subject = encodeURIComponent("【大连工博会参展咨询】" + (data.company || "") + " · " + (data.contact || ""));
+          const body = encodeURIComponent(
+            "公司名称：" + (data.company || "") + "\n" +
+            "联系人：" + (data.contact || "") + "\n" +
+            "联系电话：" + (data.phone || "") + "\n" +
+            "邮箱：" + (data.email || "") + "\n" +
+            "意向展区：" + (data.zone || "") + "\n" +
+            "咨询内容：" + (data.message || "") + "\n" +
+            "提交时间：" + new Date().toLocaleString("zh-CN")
+          );
+          ok.innerHTML = `⚠️ 自动发送未完成（可能需在邮箱中点击激活链接）。<br>` +
+                         `已为您打开邮件，发送至 <b>1060200619@qq.com</b> 后即可完成提交。<br>` +
+                         `<a class="form-mailto" href="mailto:1060200619@qq.com?subject=${subject}&body=${body}">点此手动发送邮件</a>`;
+          ok.classList.remove("hidden");
+          // 自动调起
+          window.location.href = `mailto:1060200619@qq.com?subject=${subject}&body=${body}`;
+        }
+        if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = submitText; }
+      });
+    }
 
     // 首页 Hero 轮播驱动
     (function bootHeroSlideshow(){
@@ -518,15 +491,15 @@
     ];
     const statsHtml = aboutStats.map(s => `<div class="stat-tile"><b>${s.num}</b><span>${s.label}</span></div>`).join("");
 
-    // why 项：所有条目统一用「白底卡片 + 左竖条 + 序号并入标题」的样式，单列展示，不分栏
     const whyHtml = (WHY_EXHIBIT || []).map(w => `
-      <div class="reason-item">
-        <h3>${esc(w.num)}、${esc(w.title)}</h3>
-        <p>${esc(w.desc).replace(/\n/g, "<br>")}</p>
+      <div class="card reason-card">
+        <div class="reason-num">${esc(w.num)}</div>
+        <h3>${esc(w.title)}</h3>
+        <p>${esc(w.desc)}</p>
       </div>`).join("");
 
     const scopeHtml = (SCOPE_DETAIL || []).map(s => `
-      <div class="scope-item">
+      <div class="card scope-card-2">
         <span class="scope-num">${esc(s.num)}</span>
         <h3>${esc(s.title)}</h3>
         <p>${esc(s.desc)}</p>
@@ -577,27 +550,7 @@
             <div class="contact-form-card">
               <h3>参展咨询</h3>
               <p class="form-lead">填写以下信息，组委会将在 24 小时内与您联系</p>
-              <form id="aboutContactForm" novalidate>
-                <div class="cf-row">
-                  <div class="cf-field"><label>公司名称 <span class="req">*</span></label><input name="company" required placeholder="请输入公司名称"></div>
-                  <div class="cf-field"><label>联系人 <span class="req">*</span></label><input name="contact" required placeholder="您的姓名"></div>
-                </div>
-                <div class="cf-row">
-                  <div class="cf-field"><label>联系电话 <span class="req">*</span></label><input name="phone" required placeholder="11 位手机号"></div>
-                  <div class="cf-field"><label>邮箱</label><input name="email" type="email" placeholder="可选"></div>
-                </div>
-                <div class="cf-field"><label>意向展区</label>
-                  <select name="zone">
-                    <option value="">请选择（可选）</option>
-                    ${EXHIBIT_SCOPE.map(g => `<option value="${esc(g.group)}">${esc(g.group)}</option>`).join("")}
-                  </select>
-                </div>
-                <div class="cf-field"><label>咨询内容</label>
-                  <textarea name="message" rows="3" placeholder="展位类型 / 面积 / 特殊需求 等"></textarea>
-                </div>
-                <button type="submit" class="btn btn-primary cf-submit">提交咨询</button>
-                <div class="form-success hidden" id="aboutContactOk"></div>
-              </form>
+              <a class="btn btn-primary" href="index.html#contact" style="display:block; text-align:center;">前往填写参展咨询表单 →</a>
             </div>
           </div>
         </div>
@@ -621,7 +574,7 @@
       <section class="section">
         <div class="container">
           <div class="section-head"><span class="eyebrow">WHY EXHIBIT</span><h2>为什么选择大连工博会</h2><p>深耕工业领域近三十载，东北地区标杆级专业工业盛会，多重权威认证加持，为企业布局东北工业市场提供可靠平台</p></div>
-          <div class="grid grid-2 why-grid">${whyHtml}</div>
+          <div class="grid grid-3">${whyHtml}</div>
         </div>
       </section>
 
@@ -648,7 +601,6 @@
 
       ${contactHtml}
     `;
-    wireInquiryForm($("#aboutContactForm"));
   }
 
   function renderExhibits() {
@@ -788,42 +740,49 @@
   }
 
   function renderTravel() {
-    const routesHtml = TRANSPORT.routes.map(r => `
-      <li class="route-item">
-        <span class="route-num">${r.num}</span>
-        <div class="route-body">
-          <h4>${esc(r.title)}</h4>
-          <p>${esc(r.desc)}</p>
-        </div>
-      </li>`).join("");
+    const tp = TRANSPORT.map(t => `
+      <div class="info-row"><div class="ic">${t.ic}</div><div><h4>${esc(t.h)}</h4><p>${esc(t.p)}</p></div></div>`).join("");
+    const ht = HOTELS.map(h => `
+      <div class="card hotel-card">
+        <h3 style="margin-top:0;">${esc(h.name)}</h3>
+        <p class="muted">📍 ${esc(h.dist)}</p>
+        <p>${esc(h.note)}</p>
+        <p class="price">${esc(h.price)}</p>
+      </div>`).join("");
     $("#page-content").innerHTML = `
       <section class="page-hero">
         <div class="container">
           <div class="breadcrumb"><a href="index.html">首页</a> / 交通与酒店</div>
           <h1>交通与酒店指南</h1>
-          <p>展馆位于大连保税区，多种出行方案，助您轻松规划行程</p>
+          <p>多种出行方案与周边协议酒店，助您轻松规划行程</p>
         </div>
       </section>
       <section class="section">
         <div class="container">
-          <div style="text-align:center; max-width:760px; margin:0 auto;">
-            <div class="venue-figure" style="margin:0 auto 22px; max-width:760px;">
-              <img src="assets/img/travel/travel-overview.jpg" alt="大连自贸区国际会展中心实景" />
+          <div class="grid grid-2">
+            <div>
+              <h2 style="font-size:1.4rem;">如何抵达</h2>
+              <div style="background:#fff; border:1px solid var(--c-line); border-radius:var(--radius); padding:20px;">${tp}</div>
             </div>
-            <h2 style="font-size:1.3rem; margin:0 0 14px;">展馆地址</h2>
-            <p style="font-size:1.15rem; font-weight:700; margin:0 0 6px; color:var(--c-navy);">${esc(SITE.venue)}</p>
-            <p style="color:#555; margin:0; font-size:.95rem;">${esc(TRANSPORT.addr)}</p>
+            <div>
+              <h2 style="font-size:1.4rem;">展馆地址</h2>
+              <div style="background:var(--c-navy); color:#fff; border-radius:var(--radius); padding:26px;">
+                <p style="font-size:1.2rem; margin:0 0 8px;">${esc(SITE.venue)}</p>
+                <p style="color:#cfe0f0; margin:0;">${esc(SITE.venueAddr)}</p>
+                <p style="color:#cfe0f0; margin:14px 0 0;">建议导航至「国家会展中心 P 停车场」，展期提供免费接驳摆渡车。</p>
+              </div>
+            </div>
           </div>
         </div>
       </section>
       <section class="section alt">
         <div class="container">
-          <div class="section-head"><span class="eyebrow">Route</span><h2>出行路线</h2><p>5 种主要出行方式，从机场 / 火车站 / 高铁 / 高速直达展馆</p></div>
-          <ul class="route-list">${routesHtml}</ul>
+          <div class="section-head"><span class="eyebrow">Hotels</span><h2>周边协议酒店</h2><p>预登记观众可凭确认短信享受协议价（示例数据）</p></div>
+          <div class="grid grid-4">${ht}</div>
         </div>
-      </section>
-`;
+      </section>`;
   }
+
   function renderRegister() {
     $("#page-content").innerHTML = `
       <section class="page-hero">
@@ -882,7 +841,7 @@
         </div>
       </section>`;
     const form = $("#regForm");
-    form.addEventListener("submit", async (e) => {
+    form.addEventListener("submit", (e) => {
       e.preventDefault();
       let ok = true;
       const setErr = (name, msg) => {
@@ -993,25 +952,6 @@
       </section>`;
   }
 
-  function renderBrands() {
-    $("#page-content").innerHTML = `
-      <section class="page-hero">
-        <div class="container">
-          <div class="breadcrumb"><a href="index.html">首页</a> / 参展品牌</div>
-          <h1>参展品牌</h1>
-          <p>汇聚全球工业领军企业，往届部分参展品牌一览（仅供参考，排名不分先后）</p>
-        </div>
-      </section>
-      <section class="section">
-        <div class="container">
-          <div class="brands-page-board">
-            <img src="assets/img/brands/brands-overview.jpg" alt="往届参展品牌：GROB / Mazak / EMAG / Panasonic / Hexagon / ZEISS / SANYO / FLUKE / KUKA / FANUC / YASKAWA / 三菱 / SMC / 一汽-大众 / OTC / SIEMENS / Mahr / rexroth / Schneider Electric / RENISHAW / KEYENCE 基恩士 / 迪能机床 / 亚德客 / 大族激光 / Unitree 宇树 / 新松 / 海康机器人 / 钛虎机器人 / TSUGAMI / 凯特精机 / Linde / 德永 / Mitutoyo / KYOCERA 等" loading="lazy" />
-            <p class="brands-page-cap">仅选取部分品牌（logo），排名不分先后</p>
-          </div>
-        </div>
-      </section>`;
-  }
-
   function renderApply() {
     const fee = APPLY_INFO.fee.map(f => `
       <div class="info-row"><div class="ic">💰</div><div>
@@ -1026,7 +966,7 @@
         <h3 style="margin-top:0; font-size:1rem;">Q：${esc(f.q)}</h3>
         <p style="margin:0;">${esc(f.a)}</p>
       </div>`).join("");
-    // 注：fix43 已下掉「意向参展展区」字段，无需渲染展区选项
+    const zones = EXHIBIT_SCOPE.map(g => `<option value="${esc(g.group)}">${esc(g.group)}</option>`).join("");
     $("#page-content").innerHTML = `
       <section class="page-hero">
         <div class="container">
@@ -1047,6 +987,11 @@
                   <div class="field"><label>手机号 <span class="req">*</span></label><input name="phone" required pattern="1[0-9]{10}"><div class="err" data-for="phone"></div></div>
                   <div class="field"><label>职务</label><input name="title" placeholder="如 市场总监"></div>
                   <div class="field"><label>邮箱</label><input name="email" type="email"><div class="err" data-for="email"></div></div>
+                  <div class="field full"><label>意向参展展区 <span class="req">*</span></label>
+                    <select name="zone" required>
+                      <option value="">请选择展区</option>
+                      ${zones}
+                    </select><div class="err" data-for="zone"></div></div>
                   <div class="field"><label>展位类型 <span class="req">*</span></label>
                     <select name="boothType" required>
                       <option value="">请选择</option>
@@ -1066,7 +1011,7 @@
                   <div class="field full"><label>备注 / 特殊需求</label><textarea name="remark" rows="3" placeholder="可填写期望展位位置、搭建需求等"></textarea></div>
                 </div>
                 <button type="submit" class="btn btn-primary" style="margin-top:18px; width:100%; justify-content:center;">提交参展报名</button>
-                <p class="form-note">提交后，报名信息将发送到组委会邮箱 1060200619@qq.com，主办方 1 个工作日内与您联系。提交即表示同意主办方与您联系对接参展事宜。</p>
+                <p class="form-note">提交即表示同意主办方与您联系对接参展事宜。本示例表单在前端校验后本地保存。</p>
                 <div class="form-success hidden" id="applyOk"></div>
               </form>
             </div>
@@ -1091,7 +1036,7 @@
     };
     typeSel.addEventListener("change", syncBooth);
     syncBooth();
-    form.addEventListener("submit", async (e) => {
+    form.addEventListener("submit", (e) => {
       e.preventDefault();
       let ok = true;
       const setErr = (name, msg) => {
@@ -1112,56 +1057,9 @@
       if (!data.products) setErr("products", "请填写主营产品/展品类别");
       if (data.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) setErr("email", "邮箱格式不正确");
       if (!ok) return;
-
-      // 本地缓存一份（防止网络异常丢数据，本机也可回看）
       try { localStorage.setItem("diie_apply_" + Date.now(), JSON.stringify(data)); } catch (_) {}
-
-      const submitBtn = form.querySelector('button[type="submit"]');
       const okBox = $("#applyOk");
-      if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = "正在提交..."; }
-
-      // ---- 主通道：同源 Cloudflare 函数代理 /api/apply（再转发 FormSubmit.co） ----
-      let delivered = false;
-      try {
-        const payload = {
-          _subject: "【大连工博会·参展报名】" + (data.company || "") + " · " + (data.contact || ""),
-          _template: "table",
-          _captcha: "false",
-          "企业名称": data.company || "",
-          "联系人": data.contact || "",
-          "手机号": data.phone || "",
-          "职务": data.title || "",
-          "邮箱": data.email || "",
-          "展位类型": data.boothType || "",
-          "标准展位数量（个）": data.boothStd || "",
-          "光地面积（㎡）": data.boothRaw || "",
-          "主营产品/展品类别": data.products || "",
-          "备注/特殊需求": data.remark || "",
-          "提交时间": new Date().toLocaleString("zh-CN")
-        };
-        delivered = await postForm(payload);
-      } catch (_) { delivered = false; }
-
-      if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = "提交参展报名"; }
-
-      if (delivered) {
-        okBox.innerHTML = `✅ 已收到！报名表已发送到组委会邮箱 <b>1060200619@qq.com</b>，<b>${esc(data.company)}</b>（${esc(data.contact)}）将在 <b>1 个工作日内</b>与您联系对接展位事宜。`;
-      } else {
-        // 兑底：调起邮件客户端（关键信息精简），同时提示直打电话
-        const subject = encodeURIComponent("【大连工博会·参展报名】" + (data.company || "") + " · " + (data.contact || ""));
-        const body = encodeURIComponent(
-          "企业名称：" + (data.company || "") + "\n" +
-          "联系人：" + (data.contact || "") + "\n" +
-          "手机号：" + (data.phone || "") + "\n" +
-          "意向展区：" + (data.zone || "") + "\n" +
-          "展位类型：" + (data.boothType || "") + "\n" +
-          (data.boothType === "标准展位" ? "标准展位数量：" + (data.boothStd || "") + "\n" : "") +
-          (data.boothType === "室内光地" ? "光地面积：" + (data.boothRaw || "") + "㎡\n" : "") +
-          "主营产品：" + (data.products || "") + "\n" +
-          "备注：" + (data.remark || "") + "\n"
-        );
-        okBox.innerHTML = `⚠️ 提交未发送出去。请拨打组委会电话 <a href="tel:18624268832"><b>18624268832</b></a>（李玥），或点此处直接发邮件：<a href="mailto:1060200619@qq.com?subject=${subject}&body=${body}">1060200619@qq.com</a>。`;
-      }
+      okBox.textContent = `✅ 报名提交成功！${esc(data.company)}，${esc(data.contact)}，组委会将尽快与您联系对接展位事宜。`;
       okBox.classList.remove("hidden");
       form.reset();
       syncBooth();
@@ -1202,7 +1100,7 @@
     const page = document.body.getAttribute("data-page");
     const map = {
       home: renderHome, about: renderAbout, exhibits: renderExhibits,
-      exhibitors: renderExhibitors, brands: renderBrands, news: renderNews, newsDetail: renderNewsDetail,
+      exhibitors: renderExhibitors, news: renderNews, newsDetail: renderNewsDetail,
       schedule: renderSchedule, travel: renderTravel, register: renderRegister,
       apply: renderApply, contact: renderContact, guide: renderGuide
     };

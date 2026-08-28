@@ -1,0 +1,6 @@
+[
+  ["open","https://dalian-expo.pages.dev/travel"],
+  ["wait","--load","networkidle"],
+  ["wait","5000"],
+  ["screenshot","--full","E:/2025工博会/check21/travel2.png"]
+]

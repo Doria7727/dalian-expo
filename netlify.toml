@@ -1,0 +1,15 @@
+[build]
+  publish = "."
+  command = ""
+
+# Decap CMS 通过 git-gateway 提交内容时需要此重定向（Netlify Identity + Git Gateway）
+[[redirects]]
+  from = "/admin/*"
+  to = "/admin/index.html"
+  status = 200
+
+# 让 data.json 始终不被缓存，确保后台保存后前台及时更新
+[[headers]]
+  for = "/assets/js/data.json"
+  [headers.values]
+    Cache-Control = "no-cache"
