@@ -339,27 +339,13 @@ function render(d){
           '备注/特殊需求': data.remark || '',
           '提交时间': new Date().toLocaleString('zh-CN')
         };
-        // 1) 同源 Cloudflare 函数代理（国内稳定可达，首选）
-        try {
-          const pr = await fetch('/api/apply', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-            body: JSON.stringify(payload)
-          });
-          if (pr.ok) {
-            const pj = await pr.json().catch(() => ({}));
-            if (pj.success === true || pj.success === 'true') delivered = true;
-          }
-        } catch (_) {}
-        // 2) 直连 FormSubmit 兜底
-        if (!delivered) {
-          const dr = await fetch('https://formsubmit.co/ajax/1060200619@qq.com', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-            body: JSON.stringify(payload)
-          });
-          delivered = dr.ok;
-        }
+        // 主通道：直连 FormSubmit.co AJAX（首次即收件，无需激活邮件）
+        const dr = await fetch('https://formsubmit.co/ajax/1060200619@qq.com', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        delivered = dr.ok;
       } catch (_) { delivered = false; }
 
       if (aBtn) { aBtn.disabled = false; aBtn.textContent = '提交参展报名'; }

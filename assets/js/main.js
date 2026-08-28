@@ -113,36 +113,9 @@
   }
 
   /* =========================================================
-     通用：把联系/咨询表单挂到 FormSubmit.co，发到 1060200619@qq.com
+     通用：把联系/咨询表单直连 FormSubmit.co，发到 1060200619@qq.com
      同时本地缓存 + 邮件兜底；首页联系区和关于页联系区共用此逻辑
      ========================================================= */
-  // 同源 Cloudflare 函数代理：先 POST 到 /api/apply（站点本身在 Cloudflare，国内稳定可达），
-  // 由边缘服务端转发给 FormSubmit.co，绕开"手机直连国外服务被墙/超时"导致提交失败的问题。
-  // 代理失败则直连 FormSubmit 兜底，再失败由调用方走 mailto。
-  async function postForm(payload) {
-    // 1) 同源代理（首选）
-    try {
-      const r = await fetch("/api/apply", {
-        method: "POST",
-        headers: { "Content-Type": "application/json", Accept: "application/json" },
-        body: JSON.stringify(payload)
-      });
-      if (r.ok) {
-        const j = await r.json().catch(() => ({}));
-        if (j.success === true || j.success === "true") return true;
-      }
-    } catch (_) {}
-    // 2) 直连 FormSubmit 兜底
-    try {
-      const r = await fetch("https://formsubmit.co/ajax/1060200619@qq.com", {
-        method: "POST",
-        headers: { "Content-Type": "application/json", Accept: "application/json" },
-        body: JSON.stringify(payload)
-      });
-      return r.ok;
-    } catch (_) { return false; }
-  }
-
   function wireInquiryForm(form) {
     if (!form) return;
     const ok = form.querySelector(".form-success");
@@ -160,7 +133,7 @@
       // 本地缓存一份（防止网络异常丢数据，浏览此设备的组委会也能看到）
       try { localStorage.setItem("diie_inquiry_" + Date.now(), JSON.stringify(data)); } catch(_) {}
 
-      // ---- 主通道：同源 Cloudflare 函数代理 /api/apply（再转发 FormSubmit.co） ----
+      // ---- 主通道：直连 FormSubmit.co AJAX（首次即收件，无需激活邮件） ----
       let delivered = false;
       try {
         const payload = {
@@ -176,7 +149,12 @@
           "提交页面": location.pathname,
           "提交时间": new Date().toLocaleString("zh-CN")
         };
-        delivered = await postForm(payload);
+        const r = await fetch("https://formsubmit.co/ajax/1060200619@qq.com", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", Accept: "application/json" },
+          body: JSON.stringify(payload)
+        });
+        delivered = r.ok;
       } catch (_) { delivered = false; }
 
       if (delivered) {
@@ -1120,7 +1098,7 @@
       const okBox = $("#applyOk");
       if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = "正在提交..."; }
 
-      // ---- 主通道：同源 Cloudflare 函数代理 /api/apply（再转发 FormSubmit.co） ----
+      // ---- 主通道：直连 FormSubmit.co AJAX（首次即收件，无需激活邮件） ----
       let delivered = false;
       try {
         const payload = {
@@ -1139,7 +1117,12 @@
           "备注/特殊需求": data.remark || "",
           "提交时间": new Date().toLocaleString("zh-CN")
         };
-        delivered = await postForm(payload);
+        const r = await fetch("https://formsubmit.co/ajax/1060200619@qq.com", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", Accept: "application/json" },
+          body: JSON.stringify(payload)
+        });
+        delivered = r.ok;
       } catch (_) { delivered = false; }
 
       if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = "提交参展报名"; }
