@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>2027 大连国际机床展 · 手机版</title>
+<style>
+  :root{
+    --navy:#0a1f3d; --navy2:#13315c; --accent:#e8541e; --accent2:#ff7a3d;
+    --ink:#1f2733; --muted:#6b7785; --bg:#eef1f6; --card:#fff;
+    --line:#e6ebf2; --soft:#f6f8fb;
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  html,body{margin:0; padding:0; background:var(--bg); color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;
+    line-height:1.7; -webkit-font-smoothing:antialiased;}
+  img{display:block; max-width:100%;}
+  a{color:inherit;}
+  .wrap{max-width:480px; margin:0 auto; background:#fff; min-height:100vh;
+    padding-bottom:96px; box-shadow:0 0 40px rgba(10,31,61,.06);}
+  .eyebrow{display:inline-block; font-size:.72rem; letter-spacing:.18em;
+    color:var(--accent); font-weight:700; margin-bottom:10px;}
+  /* Hero badge：白底圆角胶囊，浅色 logo（红D/紫IEF/蓝绿Ufi）在深色 hero 上更醒目 */
+  .badge{display:inline-flex; align-items:center; gap:8px;
+    font-size:.74rem; font-weight:700; letter-spacing:.1em;
+    background:rgba(255,255,255,.95); color:var(--navy);
+    border:1px solid rgba(255,255,255,.5); border-radius:30px;
+    padding:5px 14px; margin-bottom:18px;}
+  .badge-logo{height:18px; width:auto; display:inline-block;}
+  .sec{padding:30px 20px; border-bottom:8px solid var(--bg);}
+  .sec h2{font-size:1.3rem; margin:0 0 16px; color:var(--navy); font-weight:800;}
+  .sec h2 .bar{display:inline-block; width:6px; height:1.05em; background:var(--accent);
+    border-radius:3px; margin-right:9px; vertical-align:-2px;}
+
+  /* Hero */
+  .hero{background:linear-gradient(155deg,#0a1f3d 0%,#16366a 52%,#e8541e 150%);
+    color:#fff; padding:54px 24px 40px; text-align:center; position:relative; overflow:hidden;}
+  .hero::after{content:""; position:absolute; right:-60px; top:-60px; width:200px; height:200px;
+    background:radial-gradient(circle,rgba(255,122,61,.35),transparent 70%);}
+  .hero h1{font-size:1.32rem; line-height:1.35; margin:0 0 14px; font-weight:800;
+    letter-spacing:.01em; white-space:nowrap;}
+  .hero .theme{font-size:1rem; color:#ffd2b8; font-weight:600; margin-bottom:20px;}
+  .hero .meta{font-size:.95rem; opacity:.92; line-height:1.9;}
+  .hero .meta b{color:#fff; font-weight:700;}
+  .hero-cta{display:block; margin:24px auto 0; max-width:280px; background:var(--accent);
+    color:#fff; text-decoration:none; font-weight:800; font-size:1.05rem; padding:15px;
+    border-radius:14px; box-shadow:0 10px 24px rgba(232,84,30,.4);}
+  .hero-cta:active{transform:translateY(1px);}
+
+  /* Stats */
+  .stats{display:grid; grid-template-columns:repeat(2,1fr); gap:12px; padding:20px;}
+  .stat{background:var(--soft); border:1px solid var(--line); border-radius:14px; padding:16px 12px; text-align:center;}
+  .stat b{display:block; font-size:1.45rem; color:var(--navy); font-weight:800; line-height:1.2;}
+  .stat span{font-size:.8rem; color:var(--muted);}
+
+  /* Reasons */
+  .reason{position:relative; background:#fff; border:1px solid var(--line); border-radius:14px;
+    padding:18px 18px 18px 22px; margin-bottom:14px;}
+  .reason::before{content:""; position:absolute; left:0; top:14px; bottom:14px; width:4px;
+    background:var(--accent); border-radius:4px;}
+  .reason h3{margin:0 0 8px; font-size:1.05rem; color:var(--navy); font-weight:800;}
+  .reason p{margin:0; font-size:.9rem; color:var(--muted); line-height:1.75;}
+
+  /* Scope tags */
+  .tags{display:flex; flex-wrap:wrap; gap:9px;}
+  .tag{background:var(--soft); border:1px solid var(--line); border-radius:20px;
+    padding:8px 14px; font-size:.82rem; color:var(--navy); font-weight:600;}
+
+  /* Image block */
+  .figure{margin:0; border-radius:14px; overflow:hidden; border:1px solid var(--line);}
+  .figure img{width:100%;}
+  .cap{font-size:.78rem; color:var(--muted); text-align:center; margin-top:8px;}
+
+  /* Past photos gallery (horizontal swipe) */
+  .gallery{display:flex; gap:12px; overflow-x:auto; scroll-snap-type:x mandatory;
+    padding:4px 2px 8px; -webkit-overflow-scrolling:touch; margin:0 -20px;}
+  .gallery::-webkit-scrollbar{display:none;}
+  .gallery figure{flex:0 0 76%; margin:0; scroll-snap-align:center; border-radius:14px;
+    overflow:hidden; border:1px solid var(--line); background:var(--soft);}
+  .gallery img{width:100%; height:210px; object-fit:cover; display:block;}
+  .gallery-hint{font-size:.74rem; color:var(--muted); text-align:center; margin-top:10px;}
+
+  /* Routes */
+  .route{display:flex; gap:14px; padding:14px 0; border-bottom:1px dashed var(--line);}
+  .route:last-child{border-bottom:0;}
+  .route .num{flex:0 0 30px; height:30px; border-radius:50%; background:var(--navy); color:#fff;
+    font-weight:800; font-size:.9rem; display:flex; align-items:center; justify-content:center;}
+  .route h4{margin:2px 0 4px; font-size:.98rem; color:var(--navy);}
+  .route p{margin:0; font-size:.84rem; color:var(--muted);}
+
+  /* Contact */
+  .contact{background:var(--navy); color:#fff; padding:28px 20px; text-align:center;}
+  .contact h2{color:#fff; margin:0 0 14px;}
+  .contact p{margin:6px 0; font-size:.92rem; opacity:.92;}
+  .contact a{color:#ffd2b8; font-weight:700; text-decoration:none;}
+
+  /* Apply form（内嵌报名表，复用 FormSubmit 后台） */
+  .apply-form label{display:block; font-size:.88rem; font-weight:700; color:var(--navy); margin-bottom:6px;}
+  .apply-form .req{color:var(--accent);}
+  .apply-form .field{margin-bottom:13px;}
+  .apply-form .row2{display:grid; grid-template-columns:1fr 1fr; gap:12px;}
+  .apply-form input,.apply-form select,.apply-form textarea{
+    width:100%; border:1px solid var(--line); border-radius:12px;
+    padding:13px 14px; font-size:1rem; color:var(--ink); background:var(--soft);
+    font-family:inherit; outline:none; -webkit-appearance:none; transition:border-color .15s,background .15s;}
+  .apply-form input:focus,.apply-form select:focus,.apply-form textarea:focus{border-color:var(--accent); background:#fff;}
+  .apply-form textarea{resize:vertical; line-height:1.6;}
+  .apply-form .err{color:#e74c3c; font-size:.76rem; min-height:1em; margin-top:4px;}
+  .apply-form .hidden{display:none;}
+  .apply-form .submit-btn{display:block; width:100%; background:var(--accent); color:#fff; border:0;
+    font-weight:800; font-size:1.05rem; padding:15px; border-radius:14px; margin-top:6px;
+    box-shadow:0 10px 24px rgba(232,84,30,.35);}
+  .apply-form .submit-btn:active{transform:translateY(1px);}
+  .apply-form .submit-btn:disabled{opacity:.6;}
+  .apply-form .form-note{font-size:.76rem; color:var(--muted); margin:12px 0 0; line-height:1.6;}
+  .apply-form .form-success{margin-top:14px; padding:14px 16px; border-radius:12px; font-size:.9rem; line-height:1.65;
+    background:rgba(46,160,67,.1); color:#1f7a33; border:1px solid rgba(46,160,67,.3);}
+  .apply-form .form-success.warn{background:rgba(232,84,30,.1); color:#a8390f; border-color:rgba(232,84,30,.3);}
+  .apply-form .form-success a{color:var(--navy); font-weight:700;}
+
+  /* Fixed bottom bar */
+  .bar{position:fixed; bottom:0; left:0; right:0; max-width:480px; margin:0 auto;
+    background:rgba(255,255,255,.96); backdrop-filter:blur(8px); border-top:1px solid var(--line);
+    padding:10px 16px calc(10px + env(safe-area-inset-bottom)); display:flex; gap:10px; z-index:60;}
+  .bar a{flex:1; text-align:center; padding:14px; border-radius:13px; font-weight:800;
+    text-decoration:none; font-size:1rem;}
+  .bar .primary{background:var(--accent); color:#fff; box-shadow:0 6px 16px rgba(232,84,30,.35);}
+  .bar .ghost{background:#fff; color:var(--accent); border:1.5px solid var(--accent);}
+
+  .reveal{opacity:0; transform:translateY(16px); transition:.5s ease;}
+  .reveal.in{opacity:1; transform:none;}
+  .loading{padding:60px 20px; text-align:center; color:var(--muted);}
+</style>
+</head>
+<body>
+<div class="wrap" id="app"><div class="loading">页面加载中…</div></div>
+
+<div class="bar">
+  <a class="ghost" href="tel:18624268832">电话咨询</a>
+  <a class="primary" href="#apply">立即参展报名</a>
+</div>
+
+<script>
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+
+fetch('assets/js/data.json?t=' + Date.now())
+  .then(r=>r.json())
+  .then(render)
+  .catch(e=>{document.getElementById('app').innerHTML='<div class="loading">数据加载失败，请刷新重试</div>';});
+
+function render(d){
+  const s = d.SITE||{};
+  const why = d.WHY_EXHIBIT||[];
+  const scope = d.EXHIBIT_SCOPE||[];
+  const trans = d.TRANSPORT||{};
+  const routes = trans.routes||[];
+  const stats = s.stats||[];
+  const past = d.PAST_PHOTOS||[];
+
+  // —— 大连国际机床展版本：仅覆盖展会名称与「02 往届盛况」文案，其余沿用工业展会数据 ——
+  if (s.name) s.name = s.name.replace(/大连国际工业博览会/g, '大连国际机床展');
+  if (why[1]) why[1].desc = '往届参展品牌：马扎克、埃马克、格劳博、蔡司、马尔、海克斯康、三菱、富士、AIDA、牧野、安川、京瓷、明电舍、三丰、野村、津上、松下、西铁城、迪恩、亚隆、克劳伊；协鸿、永进、程泰、益全、福裕、KSS、通用技术、纽威数控、震环、东部数控、易锻、松谷激光、科德、威达、宇树机器人、遨博机器人、钛虎机器人、海康，一汽大众发动机等全球领军品牌。上届展会现场汇聚5万余人次专业参观采购人群，其中90%以上为工厂采购决策者、技术研发总监、产业链核心采购负责人，供需匹配精准高效。同期举办20余场行业高端论坛、技术峰会，搭建产学研商交流桥梁；展会现场订单成交额连年刷新，充分印证展会在高端制造领域不可替代的标杆价值。';
+
+  const statsHtml = stats.map(x=>`<div class="stat"><b>${esc(x.num)}</b><span>${esc(x.label)}</span></div>`).join('');
+  const whyHtml = why.map(w=>`<div class="reason reveal"><h3>${esc(w.num)}、${esc(w.title)}</h3><p>${esc(w.desc).replace(/\n/g,'<br>')}</p></div>`).join('');
+  const tagsHtml = scope.map(g=>`<span class="tag">${esc(g.group)}</span>`).join('');
+  const routesHtml = routes.map(r=>`<div class="route"><div class="num">${esc(r.num)}</div><div><h4>${esc(r.title)}</h4><p>${esc(r.desc)}</p></div></div>`).join('');
+  const pastHtml = past.map(p=>`<figure><img src="${esc(p.img)}" alt="往届回顾" loading="lazy"></figure>`).join('');
+
+  const html = `
+  <section class="hero">
+    <span class="badge"><img class="badge-logo" src="assets/img/logo-composite.png" alt="">${esc(s.edition||'第29届')}</span>
+    <h1>${esc(s.name||'大连国际机床展')}</h1>
+    <div class="theme">主题：${esc(s.theme||'数智引领工业')}</div>
+    <div class="meta">
+      <b>${esc(s.dateText||'')}</b><br>
+      地点：${esc(s.venue||'大连自贸区国际会展中心')}
+    </div>
+    <a class="hero-cta" href="#apply">立即参展报名 →</a>
+  </section>
+
+  <div class="stats">${statsHtml}</div>
+
+  <section class="sec">
+    <h2><span class="bar"></span>五大参展理由</h2>
+    ${whyHtml}
+  </section>
+
+  <section class="sec">
+    <h2><span class="bar"></span>展品范围</h2>
+    <div class="tags">${tagsHtml}</div>
+  </section>
+
+  <section class="sec">
+    <h2><span class="bar"></span>往届参展品牌</h2>
+    <figure class="figure"><img src="assets/img/brands/brands-overview.jpg" alt="往届参展品牌" loading="lazy"></figure>
+    <div class="cap">仅选取部分品牌 logo，排名不分先后</div>
+  </section>
+
+  <section class="sec">
+    <h2><span class="bar"></span>往届回顾</h2>
+    <div class="gallery">${pastHtml}</div>
+    <div class="gallery-hint">← 左右滑动查看更多往届现场 →</div>
+  </section>
+
+  <section class="sec">
+    <h2><span class="bar"></span>展馆 & 交通路线</h2>
+    <figure class="figure" style="margin-bottom:16px;"><img src="assets/img/travel/travel-overview.jpg" alt="展馆实景" loading="lazy"></figure>
+    <p style="margin:0 0 4px;font-weight:700;color:var(--navy);">展馆地址</p>
+    <p style="margin:0 0 16px;color:var(--muted);font-size:.9rem;">${esc(s.venue||'')} · ${esc(trans.addr||'')}</p>
+    ${routesHtml}
+  </section>
+
+  <section class="sec" id="apply">
+    <h2><span class="bar"></span>参展报名</h2>
+    <form class="apply-form" id="h5ApplyForm" novalidate>
+      <div class="field">
+        <label>企业名称 <span class="req">*</span></label>
+        <input name="company" required placeholder="请填写营业执照全称">
+        <div class="err" data-for="company"></div>
+      </div>
+      <div class="row2">
+        <div class="field">
+          <label>联系人 <span class="req">*</span></label>
+          <input name="contact" required>
+          <div class="err" data-for="contact"></div>
+        </div>
+        <div class="field">
+          <label>手机号 <span class="req">*</span></label>
+          <input name="phone" required pattern="1[0-9]{10}">
+          <div class="err" data-for="phone"></div>
+        </div>
+      </div>
+      <div class="field">
+        <label>职务</label>
+        <input name="title" placeholder="如 市场总监">
+      </div>
+      <div class="field">
+        <label>邮箱</label>
+        <input name="email" type="email" placeholder="选填">
+        <div class="err" data-for="email"></div>
+      </div>
+      <div class="field">
+        <label>展位类型 <span class="req">*</span></label>
+        <select name="boothType" required>
+          <option value="">请选择</option>
+          <option value="标准展位">标准展位（3m×3m）</option>
+          <option value="室内光地">室内光地（≥36㎡）</option>
+        </select>
+        <div class="err" data-for="boothType"></div>
+      </div>
+      <div class="field" id="h5StdWrap">
+        <label>标准展位数量（个） <span class="req">*</span></label>
+        <input name="boothStd" type="number" min="1" placeholder="如 2">
+        <div class="err" data-for="boothStd"></div>
+      </div>
+      <div class="field hidden" id="h5RawWrap">
+        <label>光地面积（㎡） <span class="req">*</span></label>
+        <input name="boothRaw" type="number" min="36" placeholder="不少于 36">
+        <div class="err" data-for="boothRaw"></div>
+      </div>
+      <div class="field">
+        <label>主营产品 / 展品类别 <span class="req">*</span></label>
+        <input name="products" required placeholder="如 数控机床、工业机器人">
+        <div class="err" data-for="products"></div>
+      </div>
+      <div class="field">
+        <label>备注 / 特殊需求</label>
+        <textarea name="remark" rows="3" placeholder="可填写期望展位位置、搭建需求等"></textarea>
+      </div>
+      <button type="submit" class="submit-btn">提交参展报名</button>
+      <p class="form-note">提交后，报名信息将发送到组委会邮箱 1060200619@qq.com，主办方 1 个工作日内与您联系。</p>
+      <div class="form-success hidden" id="h5ApplyOk"></div>
+    </form>
+  </section>
+
+  <section class="contact">
+    <h2 style="color:#fff;">参展咨询</h2>
+    <p>联系人：${esc((s.contact&&s.contact.person)||'李玥')}</p>
+    <p>电话：<a href="tel:18624268832">186 2426 8832</a></p>
+    <p>邮箱：<a href="mailto:1060200619@qq.com">1060200619@qq.com</a></p>
+  </section>
+  `;
+
+  document.getElementById('app').innerHTML = html;
+
+  /* ---------- 内嵌报名表单：展位类型联动 + 校验 + FormSubmit 后台 ---------- */
+  const af = document.getElementById('h5ApplyForm');
+  if (af) {
+    const aType = af.querySelector('[name="boothType"]');
+    const aStdWrap = document.getElementById('h5StdWrap');
+    const aRawWrap = document.getElementById('h5RawWrap');
+    const aSync = () => {
+      const isStd = aType.value === '标准展位';
+      aStdWrap.classList.toggle('hidden', !isStd);
+      aRawWrap.classList.toggle('hidden', isStd);
+    };
+    aType.addEventListener('change', aSync);
+    aSync();
+
+    af.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      let ok = true;
+      const setErr = (name, msg) => {
+        const box = af.querySelector('.err[data-for="' + name + '"]');
+        if (box) box.textContent = msg || '';
+        if (msg) ok = false;
+      };
+      ['company','contact','phone','boothType','boothStd','boothRaw','products','email']
+        .forEach(n => setErr(n, ''));
+      const data = Object.fromEntries(new FormData(af).entries());
+      if (!data.company) setErr('company', '请填写企业名称');
+      if (!data.contact) setErr('contact', '请填写联系人');
+      if (!/^1[0-9]{10}$/.test(data.phone || '')) setErr('phone', '请填写正确的 11 位手机号');
+      if (!data.boothType) setErr('boothType', '请选择展位类型');
+      if (data.boothType === '标准展位' && !(Number(data.boothStd) > 0)) setErr('boothStd', '请填写标准展位数量');
+      if (data.boothType === '室内光地' && !(Number(data.boothRaw) >= 36)) setErr('boothRaw', '光地面积不少于 36 ㎡');
+      if (!data.products) setErr('products', '请填写主营产品/展品类别');
+      if (data.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) setErr('email', '邮箱格式不正确');
+      if (!ok) return;
+
+      try { localStorage.setItem('diie_apply_' + Date.now(), JSON.stringify(data)); } catch (_) {}
+
+      const aBtn = af.querySelector('button[type="submit"]');
+      const aOk = document.getElementById('h5ApplyOk');
+      if (aBtn) { aBtn.disabled = true; aBtn.textContent = '正在提交...'; }
+
+      let delivered = false;
+      try {
+        const payload = {
+          _subject: '【大连机床展·参展报名】' + (data.company || '') + ' · ' + (data.contact || ''),
+          _template: 'table',
+          _captcha: 'false',
+          '企业名称': data.company || '',
+          '联系人': data.contact || '',
+          '手机号': data.phone || '',
+          '职务': data.title || '',
+          '邮箱': data.email || '',
+          '展位类型': data.boothType || '',
+          '标准展位数量（个）': data.boothStd || '',
+          '光地面积（㎡）': data.boothRaw || '',
+          '主营产品/展品类别': data.products || '',
+          '备注/特殊需求': data.remark || '',
+          '提交时间': new Date().toLocaleString('zh-CN')
+        };
+        // 主通道：直连 FormSubmit.co AJAX（首次即收件，无需激活邮件）
+        const dr = await fetch('https://formsubmit.co/ajax/1060200619@qq.com', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        delivered = dr.ok;
+      } catch (_) { delivered = false; }
+
+      if (aBtn) { aBtn.disabled = false; aBtn.textContent = '提交参展报名'; }
+
+      if (delivered) {
+        aOk.className = 'form-success';
+        aOk.innerHTML = '✅ 已收到！报名表已发送到组委会邮箱 <b>1060200619@qq.com</b>，<b>' + esc(data.company) + '</b>（' + esc(data.contact) + '）将在 <b>1 个工作日内</b>与您联系对接展位事宜。';
+      } else {
+        const subject = encodeURIComponent('【大连机床展·参展报名】' + (data.company || '') + ' · ' + (data.contact || ''));
+        const body = encodeURIComponent(
+          '企业名称：' + (data.company || '') + '\n' +
+          '联系人：' + (data.contact || '') + '\n' +
+          '手机号：' + (data.phone || '') + '\n' +
+          '展位类型：' + (data.boothType || '') + '\n' +
+          (data.boothType === '标准展位' ? '标准展位数量：' + (data.boothStd || '') + '\n' : '') +
+          (data.boothType === '室内光地' ? '光地面积：' + (data.boothRaw || '') + '㎡\n' : '') +
+          '主营产品：' + (data.products || '') + '\n' +
+          '备注：' + (data.remark || '') + '\n'
+        );
+        aOk.className = 'form-success warn';
+        aOk.innerHTML = '⚠️ 提交未发送出去。请拨打组委会电话 <a href="tel:18624268832"><b>18624268832</b></a>（李玥），或点此处直接发邮件：<a href="mailto:1060200619@qq.com?subject=' + subject + '&body=' + body + '">1060200619@qq.com</a>。';
+      }
+      aOk.classList.remove('hidden');
+      af.reset();
+      aSync();
+      aOk.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    });
+  }
+
+  // 进入视口淡入
+  const io = new IntersectionObserver((es)=>{
+    es.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target);} });
+  },{threshold:.12});
+  document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+}
+</script>
+</body>
+</html>
