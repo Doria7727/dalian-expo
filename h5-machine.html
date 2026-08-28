@@ -66,6 +66,13 @@
   .tag{background:var(--soft); border:1px solid var(--line); border-radius:20px;
     padding:8px 14px; font-size:.82rem; color:var(--navy); font-weight:600;}
 
+  /* 机床展专属展品范围（分组卡片） */
+  .scope-list{display:flex; flex-direction:column; gap:14px;}
+  .scope-group{background:var(--soft); border:1px solid var(--line); border-radius:14px;
+    padding:14px 16px; border-left:4px solid var(--accent);}
+  .scope-title{font-weight:800; color:var(--navy); font-size:.96rem; margin-bottom:6px;}
+  .scope-items{font-size:.85rem; line-height:1.75; color:var(--ink);}
+
   /* Image block */
   .figure{margin:0; border-radius:14px; overflow:hidden; border:1px solid var(--line);}
   .figure img{width:100%;}
@@ -151,7 +158,16 @@ fetch('assets/js/data.json?t=' + Date.now())
 function render(d){
   const s = d.SITE||{};
   const why = d.WHY_EXHIBIT||[];
-  const scope = d.EXHIBIT_SCOPE||[];
+  // 大连国际机床展专属展品范围（覆盖 data.json 的工业展 EXHIBIT_SCOPE，仅本页生效）
+  const scope = [
+    {t:'机床类', c:'金属切削机床、数控加工中心、车床、铣床、磨床、镗床、钻床、锯床、拉床、刨床、雕铣机、攻丝机、组合机床、机床电器、金属加工液、附件等；'},
+    {t:'金属成型机床类', c:'金属薄板切割机床和激光切割机、水射流技术、冲床及自动化周边设备、液压机、剪扳机、折弯机、拉伸机、卷板机、弯管机、自动锻机、倒角机、带锯机、圆锯机、溶接机、油压机、研磨机、抛丸机、周边设备等；'},
+    {t:'', c:'数控系统、伺服驱动装置、CAD/CAM/CAE/PDM等计算机应用软件和硬件、机械传动部件、气动液压元件；'},
+    {t:'刀具、量具、工具类', c:'各种车刀、铣刀、镗刀、镗头、钻头、砂轮、锯片、螺纹刀具、可转位刀片、研磨膏等；量具、测量仪器及三座标测量机等；各种电动/手动工具及工具柜系列、工作桌等工具配套产品。'},
+    {t:'模具及模具制造技术及设备', c:'电火花机、慢走丝机、线切割机、打标机、超声波清洗机、合模机、激光设备、快速制模设备等模具设备；'},
+    {t:'各种模具', c:'冲压模、塑料模、压铸模、锻模、陶瓷模、拉丝模、硬质合金模、橡胶模等；'},
+    {t:'模具材料', c:'模具钢材、金属板材(线材)、铝合金材料、电极墨、电极铜料等;模具标准件：模架、导柱、导套、顶杄、冲头、紧固件、弹簧、浇套及热流道元件等。磨料磨具、模具CAD专业系统、各类成形模具加工、模具标准件、结构件等；产品的快速开发系统及开发服务；'}
+  ];
   const trans = d.TRANSPORT||{};
   const routes = trans.routes||[];
   const stats = s.stats||[];
@@ -163,7 +179,10 @@ function render(d){
 
   const statsHtml = stats.map(x=>`<div class="stat"><b>${esc(x.num)}</b><span>${esc(x.label)}</span></div>`).join('');
   const whyHtml = why.map(w=>`<div class="reason reveal"><h3>${esc(w.num)}、${esc(w.title)}</h3><p>${esc(w.desc).replace(/\n/g,'<br>')}</p></div>`).join('');
-  const tagsHtml = scope.map(g=>`<span class="tag">${esc(g.group)}</span>`).join('');
+  const tagsHtml = scope.map(g=>{
+    const title = g.t ? `<div class="scope-title">${esc(g.t)}</div>` : '';
+    return `<div class="scope-group">${title}<div class="scope-items">${esc(g.c)}</div></div>`;
+  }).join('');
   const routesHtml = routes.map(r=>`<div class="route"><div class="num">${esc(r.num)}</div><div><h4>${esc(r.title)}</h4><p>${esc(r.desc)}</p></div></div>`).join('');
   const pastHtml = past.map(p=>`<figure><img src="${esc(p.img)}" alt="往届回顾" loading="lazy"></figure>`).join('');
 
@@ -188,7 +207,7 @@ function render(d){
 
   <section class="sec">
     <h2><span class="bar"></span>展品范围</h2>
-    <div class="tags">${tagsHtml}</div>
+    <div class="scope-list">${tagsHtml}</div>
   </section>
 
   <section class="sec">
