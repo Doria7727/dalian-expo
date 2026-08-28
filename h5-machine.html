@@ -176,6 +176,7 @@ function render(d){
   // —— 大连国际机床展版本：仅覆盖展会名称与「02 往届盛况」文案，其余沿用工业展会数据 ——
   if (s.name) s.name = s.name.replace(/大连国际工业博览会/g, '大连国际机床展');
   if (why[1]) why[1].desc = '往届参展品牌：马扎克、埃马克、格劳博、蔡司、马尔、海克斯康、三菱、富士、AIDA、牧野、安川、京瓷、明电舍、三丰、野村、津上、松下、西铁城、迪恩、亚隆、克劳伊；协鸿、永进、程泰、益全、福裕、KSS、通用技术、纽威数控、震环、东部数控、易锻、松谷激光、科德、威达、宇树机器人、遨博机器人、钛虎机器人、海康，一汽大众发动机等全球领军品牌。上届展会现场汇聚5万余人次专业参观采购人群，其中90%以上为工厂采购决策者、技术研发总监、产业链核心采购负责人，供需匹配精准高效。同期举办20余场行业高端论坛、技术峰会，搭建产学研商交流桥梁；展会现场订单成交额连年刷新，充分印证展会在高端制造领域不可替代的标杆价值。';
+  if (why[0]) why[0].desc = why[0].desc.replace(/大连国际工业博览会/g, '大连国际机床展');
 
   const statsHtml = stats.map(x=>`<div class="stat"><b>${esc(x.num)}</b><span>${esc(x.label)}</span></div>`).join('');
   const whyHtml = why.map(w=>`<div class="reason reveal"><h3>${esc(w.num)}、${esc(w.title)}</h3><p>${esc(w.desc).replace(/\n/g,'<br>')}</p></div>`).join('');
